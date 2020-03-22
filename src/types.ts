@@ -74,6 +74,8 @@ export enum CombatantTeam {
 
 // Character that can take part in a combat encounter
 export class Combatant {
+  id: number;
+
   attributes: AttributeList;
   team: CombatantTeam;
   name: string;
@@ -92,6 +94,8 @@ export class Combatant {
   maxMP: number;
 
   protected constructor (name: string, attributes: AttributeList | AttributeValueList) {
+    this.id = Math.random()
+
     this.level = 1
     this.xp = 0
     this.maxXP = 100
