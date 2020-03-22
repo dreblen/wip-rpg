@@ -74,7 +74,7 @@ export default Vue.extend({
 
       // Make sure we're allowed to take a turn
       let canTakeTurn = true
-      if (this.currentCombatant.hp === 0) {
+      if (this.currentCombatant.hp <= 0) {
         canTakeTurn = false
       }
 

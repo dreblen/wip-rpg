@@ -163,7 +163,7 @@ export class Combatant {
               const f = (1 / (i + 1)) * this.actor.attributes[this.affinities[i]].value
               base += f * 5
             }
-            target.hp -= Math.ceil(base)
+            target.hp = Math.max(0, target.hp - Math.ceil(base))
 
             results.push(EncounterActionResult.Success)
           }
