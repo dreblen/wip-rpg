@@ -20,6 +20,14 @@
             >
               <v-card-title @click="toggle">
                 {{ p.name }} (Lv {{ p.level }})
+                <v-btn
+                  icon
+                  color="orange"
+                  v-if="p.attributePointsAvailable > 0"
+                  @click.stop="levelUp(p)"
+                >
+                  <v-icon>mdi-arrow-up-thick</v-icon>
+                </v-btn>
                 <v-spacer />
                 <v-btn icon @click.stop="toggle">
                   <v-icon>
@@ -72,12 +80,16 @@
         </v-item>
       </v-row>
     </v-item-group>
+    <level-up-dialog v-model="showLevelUpDialog" :partyMember="levelUpPartyMember" />
   </v-container>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { mapState } from 'vuex'
+import { PartyCombatant } from '@/types'
+
+import LevelUpDialog from '@/components/LevelUpDialog.vue'
 
 export default Vue.extend({
   name: 'PartySelectionCards',
@@ -87,7 +99,11 @@ export default Vue.extend({
       ['hp', 'maxHP', 'red'],
       ['mp', 'maxMP', 'blue']
     ],
-    selectedItemIndices: []
+    selectedItemIndices: [],
+
+    // Level Up
+    showLevelUpDialog: false,
+    levelUpPartyMember: undefined as PartyCombatant | undefined
   }),
   computed: {
     ...mapState([
@@ -107,6 +123,15 @@ export default Vue.extend({
   model: {
     prop: 'selection',
     event: 'change'
+  },
+  methods: {
+    levelUp (p: PartyCombatant): void {
+      this.levelUpPartyMember = p
+      this.showLevelUpDialog = true
+    }
+  },
+  components: {
+    LevelUpDialog
   }
 })
 </script>

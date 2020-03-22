@@ -185,6 +185,32 @@ export class Combatant {
 
     return [action, [opposingCombatants[0]]]
   }
+
+  public increaseAttribute (name: AttributeName, increase: number, sideEffectsOnly = false): void {
+    // Make sure we have a valid increase
+    if (increase < 1) {
+      throw new Error('Increase must be a positive number')
+    }
+
+    // Increase the value itself, unless we've been told not to
+    if (!sideEffectsOnly) {
+      this.attributes[name].value += increase
+    }
+
+    // Handle any side effects of increasing this attribute
+    switch (name) {
+      case 'end':
+        // Increase HP and MP
+        for (let i = this.attributes[name].value - increase; i < this.attributes[name].value; i++) {
+          this.maxHP += Math.max(5, Math.floor(i * 0.75))
+          this.maxMP += Math.max(5, Math.floor(i * 0.75))
+        }
+
+        this.hp = this.maxHP
+        this.mp = this.maxMP
+        break
+    }
+  }
 }
 
 export class EnemyCombatant extends Combatant {
@@ -206,21 +232,12 @@ export class EnemyCombatant extends Combatant {
 
     for (const a in this.attributes) {
       const diff = this.attributes[a].scale(numLevels * 1.25)
+
       // See if there are side effects to changing this attribute
-      switch (a as AttributeName) {
-        case 'end':
-          // Increase HP and MP
-          for (let i = this.attributes[a].value - diff; i < this.attributes[a].value; i++) {
-            this.maxHP += Math.max(5, Math.floor(i * 0.75))
-            this.maxMP += Math.max(5, Math.floor(i * 0.75))
-          }
-          break
+      if (diff > 0) {
+        this.increaseAttribute(a as AttributeName, diff, true)
       }
     }
-
-    // Make sure our stats are at their maximum values
-    this.hp = this.maxHP
-    this.mp = this.maxMP
   }
 }
 
@@ -236,6 +253,7 @@ export interface EnemyCombatantTypeList {
 
 export class PartyCombatant extends Combatant {
   encountersUntilAvailable: number;
+  attributePointsAvailable: number;
 
   constructor (name: string, attributes: AttributeList | AttributeValueList) {
     super(name, attributes)
@@ -243,5 +261,6 @@ export class PartyCombatant extends Combatant {
     this.isSimulated = false
 
     this.encountersUntilAvailable = 0
+    this.attributePointsAvailable = 0
   }
 }
