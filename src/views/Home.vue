@@ -10,12 +10,23 @@
         <p>TBD% chance of victory</p>
       </v-card-text>
       <v-card-actions>
-        <v-btn
-          @click="startEncounter"
-          :disabled="selectedParty.length === 0"
-        >
-          Start Encounter
-        </v-btn>
+        <v-row>
+          <v-col>
+            <v-btn
+              @click="startEncounter"
+              :disabled="selectedParty.length === 0"
+            >
+              Start Encounter
+            </v-btn>
+          </v-col>
+          <v-col>
+            <v-btn
+              @click="skipEncounter"
+            >
+              Skip Encounter
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -75,6 +86,12 @@ export default Vue.extend({
       // Set our encounter combatants and begin
       this.$store.dispatch('startEncounter', { enemies: this.enemies, party: this.selectedParty })
       this.$router.push('/encounter')
+    },
+    skipEncounter () {
+      // "Start" a new encounter with no party members, then finish it immediately
+      this.$store.dispatch('startEncounter', { enemies: this.enemies, party: [] })
+      this.$store.dispatch('finishEncounter')
+      this.generateEncounter()
     }
   },
   mounted (): void {
