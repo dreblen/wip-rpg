@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <party-selection-cards v-model="selectedParty" />
     <v-card v-if="enemies.length > 0">
       <v-card-title>
         TBD% Chance of {{ enemies.length }} Enemies
@@ -9,7 +10,12 @@
         <p>TBD% chance of victory</p>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="startEncounter">Start Encounter</v-btn>
+        <v-btn
+          @click="startEncounter"
+          :disabled="selectedParty.length === 0"
+        >
+          Start Encounter
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -18,11 +24,14 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapState } from 'vuex'
+import PartySelectionCards from '@/components/PartySelectionCards.vue'
+
 import * as RPG from '@/types'
 
 export default Vue.extend({
   name: 'Home',
   data: () => ({
+    selectedParty: [],
     enemies: [] as Array<RPG.EnemyCombatant>,
     enemyTypes: {} as RPG.EnemyCombatantTypeList,
     encounterSets: [] as Array<RPG.EncounterSet>
@@ -63,11 +72,8 @@ export default Vue.extend({
       })
     },
     startEncounter () {
-      // TODO: This should be based on selection in the UI
-      const party = this.party
-
       // Set our encounter combatants and begin
-      this.$store.dispatch('startEncounter', { enemies: this.enemies, party })
+      this.$store.dispatch('startEncounter', { enemies: this.enemies, party: this.selectedParty })
       this.$router.push('/encounter')
     }
   },
@@ -107,6 +113,9 @@ export default Vue.extend({
 
     // Generate our first encounter
     this.generateEncounter()
+  },
+  components: {
+    PartySelectionCards
   }
 })
 </script>
