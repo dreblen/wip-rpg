@@ -125,12 +125,22 @@ export default new Vuex.Store({
       }
 
       // For any party members who were *not* in this most recent encounter,
-      // decrease their usage cooldown period
+      // decrease their usage cooldown period and address ailments
       state.party.filter((p) => {
         return living.findIndex(l => l.id === p.id) === -1
       }).forEach((p) => {
         if (p.encountersUntilAvailable > 0) {
           p.encountersUntilAvailable--
+        }
+
+        // Regenerate HP at 10% per encounter
+        if (p.hp < p.maxHP) {
+          p.hp = Math.min(p.maxHP, p.hp + (p.maxHP * 0.1))
+        }
+
+        // Regenerate MP at 5% per encounter
+        if (p.mp < p.maxMP) {
+          p.mp = Math.min(p.maxMP, p.mp + (p.maxMP * 0.05))
         }
       })
 
