@@ -262,5 +262,12 @@ export class PartyCombatant extends Combatant {
 
     this.encountersUntilAvailable = 0
     this.attributePointsAvailable = 0
+
+    // Make sure we benefit from the side effects of our initial attributes
+    for (const name in this.attributes) {
+      if (this.attributes[name].value > 0) {
+        this.increaseAttribute(name as AttributeName, this.attributes[name].value, true)
+      }
+    }
   }
 }
