@@ -158,10 +158,12 @@ export class Combatant {
             // Roll for damage
             // - base damage is our primary attribute minus the target's defense
             let base = 5 * Math.max(1, this.actor.attributes[this.affinities[0]].value - target.attributes.end.value)
+            // - randomize the base damage slightly
+            base *= Math.max(0.9, Math.min(1.1, Math.random() + 0.5))
             // - increase our base damage by attribute factors
             for (let i = 0; i < this.affinities.length; i++) {
               const f = (1 / (i + 1)) * this.actor.attributes[this.affinities[i]].value
-              base += f * 5
+              base *= 1 + (f * 0.05)
             }
             target.hp = Math.max(0, target.hp - Math.ceil(base))
 
