@@ -68,6 +68,10 @@ export default new Vuex.Store({
     addPartyMember: function (state: State, p: PartyCombatant) {
       state.party.push(p)
     },
+    removePartyMember: function (state: State, p: PartyCombatant) {
+      const i = state.party.findIndex(o => o.id === p.id)
+      state.party.splice(i, 1)
+    },
     setEncounterActive: function (state: State, isActive: boolean) {
       state.encounter.isActive = isActive
     },
@@ -84,7 +88,31 @@ export default new Vuex.Store({
       commit('setEncounterEnemies', payload.enemies)
       commit('setEncounterActive', true)
     },
-    finishEncounter: function ({ commit }) {
+    finishEncounter: function ({ state, commit }) {
+      // Eliminate any killed party members globally
+      state.encounter.party.forEach((p) => {
+        if (p.hp <= 0) {
+          commit('removePartyMember', p)
+        }
+      })
+
+      // See if we have any living party members left
+      const living = state.encounter.party.filter(p => p.hp > 0)
+      if (living.length > 0) {
+        // Determine experience points based on the enemies' attributes
+        const xp = 10 * state.encounter.enemies.reduce((c, e) => {
+          return c + Object.keys(e.attributes).reduce((c, a) => {
+            return c + e.attributes[a].value
+          }, 0)
+        }, 0)
+
+        // Divide the experience between the living party members, giving a
+        // bonus based on the LDR attribute
+        living.forEach((p) => {
+          p.xp += (xp / living.length) * (1 + (0.05 * p.attributes.ldr.value))
+        })
+      }
+
       commit('setEncounterParty', [])
       commit('setEncounterEnemies', [])
       commit('setEncounterActive', false)
