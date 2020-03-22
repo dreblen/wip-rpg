@@ -111,8 +111,24 @@ export default new Vuex.Store({
         living.forEach((p) => {
           p.xp += (xp / living.length) * (1 + (0.05 * p.attributes.ldr.value))
         })
+
+        // Mark these party members as unavailable for the next encounter
+        living.forEach((p) => {
+          p.encountersUntilAvailable = 1
+        })
       }
 
+      // For any party members who were *not* in this most recent encounter,
+      // decrease their usage cooldown period
+      state.party.filter((p) => {
+        return living.findIndex(l => l.id === p.id) === -1
+      }).forEach((p) => {
+        if (p.encountersUntilAvailable > 0) {
+          p.encountersUntilAvailable--
+        }
+      })
+
+      // Reset our encounter data
       commit('setEncounterParty', [])
       commit('setEncounterEnemies', [])
       commit('setEncounterActive', false)

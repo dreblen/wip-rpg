@@ -229,9 +229,13 @@ export interface EnemyCombatantTypeList {
 }
 
 export class PartyCombatant extends Combatant {
+  encountersUntilAvailable: number;
+
   constructor (name: string, attributes: AttributeList | AttributeValueList) {
     super(name, attributes)
     this.team = CombatantTeam.Party
     this.isSimulated = false
+
+    this.encountersUntilAvailable = 0
   }
 }

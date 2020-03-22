@@ -16,6 +16,7 @@
           >
             <v-card
               :color="active ? 'yellow lighten-4' : ''"
+              :disabled="p.encountersUntilAvailable > 0"
             >
               <v-card-title @click="toggle">
                 {{ p.name }} (Lv {{ p.level }})
@@ -26,6 +27,9 @@
                   </v-icon>
                 </v-btn>
               </v-card-title>
+              <v-card-subtitle v-if="p.encountersUntilAvailable > 0">
+                Available after {{ p.encountersUntilAvailable }}
+              </v-card-subtitle>
               <v-expansion-panels flat tile>
                 <v-expansion-panel>
                   <v-expansion-panel-header>
