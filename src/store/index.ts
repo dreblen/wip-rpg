@@ -13,6 +13,7 @@ Vue.use(Vuex)
 
 // Define what our state object (and its children) should look like
 interface EncounterState {
+  index: number;
   isActive: boolean;
   party: Array<PartyCombatant>;
   enemies: Array<EnemyCombatant>;
@@ -28,6 +29,7 @@ export default new Vuex.Store({
   state: {
     party: [],
     encounter: {
+      index: 0,
       isActive: false,
       party: [],
       enemies: []
@@ -72,6 +74,9 @@ export default new Vuex.Store({
       const i = state.party.findIndex(o => o.id === p.id)
       state.party.splice(i, 1)
     },
+    increaseEncounterIndex: function (state: State) {
+      state.encounter.index++
+    },
     setEncounterActive: function (state: State, isActive: boolean) {
       state.encounter.isActive = isActive
     },
@@ -84,6 +89,7 @@ export default new Vuex.Store({
   },
   actions: {
     startEncounter: function ({ commit }, payload: EncounterState) {
+      commit('increaseEncounterIndex')
       commit('setEncounterParty', payload.party)
       commit('setEncounterEnemies', payload.enemies)
       commit('setEncounterActive', true)
