@@ -115,7 +115,7 @@ export default new Vuex.Store({
         // Divide the experience between the living party members, giving a
         // bonus based on the LDR attribute
         living.forEach((p) => {
-          p.xp += (xp / living.length) * (1 + (0.05 * p.attributes.ldr.value))
+          p.xp += Math.floor((xp / living.length) * (1 + (0.05 * p.attributes.ldr.value)))
         })
 
         // Mark these party members as unavailable for the next encounter
