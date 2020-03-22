@@ -76,12 +76,15 @@ export enum CombatantTeam {
 export class Combatant {
   attributes: AttributeList;
   team: CombatantTeam;
-  level: number;
   name: string;
 
   actions: Array<EncounterAction>;
 
   isSimulated: boolean;
+
+  level: number;
+  xp: number;
+  maxXP: number;
 
   hp: number;
   maxHP: number;
@@ -90,6 +93,9 @@ export class Combatant {
 
   protected constructor (name: string, attributes: AttributeList | AttributeValueList) {
     this.level = 1
+    this.xp = 0
+    this.maxXP = 100
+
     this.hp = this.maxHP = 100
     this.mp = this.maxMP = 10
 
