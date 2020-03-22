@@ -215,6 +215,10 @@ export class EnemyCombatant extends Combatant {
           break
       }
     }
+
+    // Make sure our stats are at their maximum values
+    this.hp = this.maxHP
+    this.mp = this.maxMP
   }
 }
 
