@@ -15,6 +15,7 @@ Vue.use(Vuex)
 interface EncounterState {
   index: number;
   isActive: boolean;
+  isSimulated: boolean;
   party: Array<PartyCombatant>;
   enemies: Array<EnemyCombatant>;
 }
@@ -31,6 +32,7 @@ export default new Vuex.Store({
     encounter: {
       index: 0,
       isActive: false,
+      isSimulated: false,
       party: [],
       enemies: []
     }
@@ -77,6 +79,9 @@ export default new Vuex.Store({
     increaseEncounterIndex: function (state: State) {
       state.encounter.index++
     },
+    setEncounterSimulated: function (state: State, isSimulated: boolean) {
+      state.encounter.isSimulated = isSimulated
+    },
     setEncounterActive: function (state: State, isActive: boolean) {
       state.encounter.isActive = isActive
     },
@@ -92,6 +97,7 @@ export default new Vuex.Store({
       commit('increaseEncounterIndex')
       commit('setEncounterParty', payload.party)
       commit('setEncounterEnemies', payload.enemies)
+      commit('setEncounterSimulated', payload.isSimulated)
       commit('setEncounterActive', true)
     },
     finishEncounter: function ({ state, commit }) {

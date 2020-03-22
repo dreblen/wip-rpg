@@ -13,10 +13,18 @@
         <v-row>
           <v-col>
             <v-btn
-              @click="startEncounter"
+              @click="startEncounter(false)"
               :disabled="selectedParty.length === 0"
             >
               Start Encounter
+            </v-btn>
+          </v-col>
+          <v-col>
+            <v-btn
+              @click="startEncounter(true)"
+              :disabled="selectedParty.length === 0"
+            >
+              Simulate Encounter
             </v-btn>
           </v-col>
           <v-col>
@@ -82,9 +90,9 @@ export default Vue.extend({
         return Math.random() - 0.5
       })
     },
-    startEncounter () {
+    startEncounter (isSimulated: boolean) {
       // Set our encounter combatants and begin
-      this.$store.dispatch('startEncounter', { enemies: this.enemies, party: this.selectedParty })
+      this.$store.dispatch('startEncounter', { enemies: this.enemies, party: this.selectedParty, isSimulated })
       this.$router.push('/encounter')
     },
     skipEncounter () {

@@ -1,16 +1,29 @@
 <template>
   <v-container>
-    <combatant-cards v-model="encounter.enemies" @click="onTargetSelected" />
-    <template v-if="currentCombatant && currentCombatant.isSimulated == false">
-      <v-btn
-        v-for="action in currentCombatant.actions"
-        @click="onActionSelected(action)"
-        :key="action.name"
-      >
-        {{ action.name }}
-      </v-btn>
+    <template v-if="encounter.isSimulated">
+      <v-row class="text-center">
+        <v-col>
+          <h1 class="mb-3">Simulating...</h1>
+          <v-progress-circular
+            indeterminate
+            size="75"
+          />
+        </v-col>
+      </v-row>
     </template>
-    <combatant-cards v-model="encounter.party" @click="onTargetSelected" />
+    <template v-else>
+      <combatant-cards v-model="encounter.enemies" @click="onTargetSelected" />
+      <template v-if="currentCombatant && currentCombatant.isSimulated == false">
+        <v-btn
+          v-for="action in currentCombatant.actions"
+          @click="onActionSelected(action)"
+          :key="action.name"
+        >
+          {{ action.name }}
+        </v-btn>
+      </template>
+      <combatant-cards v-model="encounter.party" @click="onTargetSelected" />
+    </template>
   </v-container>
 </template>
 
@@ -25,6 +38,8 @@ export default Vue.extend({
   name: 'Encounter',
   data: () => ({
     combatants: [] as Array<RPG.Combatant>,
+
+    simulationDelay: 750,
 
     pendingUserAction: null as RPG.EncounterAction | null,
     userAction: null as Promise<RPG.ActionSelection> | null,
@@ -81,13 +96,13 @@ export default Vue.extend({
       if (canTakeTurn) {
         // Show selection UI or simulate action selection
         let selection: RPG.ActionSelection
-        if (this.currentCombatant.isSimulated) {
+        if (this.currentCombatant.isSimulated || this.encounter.isSimulated) {
           // Get the simulated selection on a delay so the user has time to see
           // what's happening
           selection = await new Promise((resolve) => {
             setTimeout(() => {
               resolve((this.currentCombatant as RPG.Combatant).getSelectedAction(this.combatants))
-            }, 750)
+            }, this.simulationDelay)
           })
         } else {
           // Set up a promise that will resolve once the user has selected both
@@ -136,6 +151,11 @@ export default Vue.extend({
 
       return Math.random() - 0.5
     })
+
+    // Remove our simulation delay if everything is simulated
+    if (this.encounter.isSimulated) {
+      this.simulationDelay = 50
+    }
 
     // Start our turn loop
     this.takeTurn()
