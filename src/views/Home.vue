@@ -13,6 +13,7 @@
         <v-row>
           <v-col>
             <v-btn
+              block
               @click="startEncounter(false)"
               :disabled="selectedParty.length === 0"
             >
@@ -21,6 +22,7 @@
           </v-col>
           <v-col>
             <v-btn
+              block
               @click="startEncounter(true)"
               :disabled="selectedParty.length === 0"
             >
@@ -29,6 +31,7 @@
           </v-col>
           <v-col>
             <v-btn
+              block
               @click="skipEncounter"
             >
               Skip Encounter
