@@ -1,6 +1,11 @@
 <template>
   <v-container>
-    <v-card v-for="(c, i) in combatants" :key="i" @click="onClick(c)">
+    <v-card
+      v-for="(c, i) in combatants"
+      :key="i"
+      @click="onClick(c)"
+      :disabled="c.hp <= 0"
+    >
       <v-card-title>{{ c.name }}</v-card-title>
       <v-card-text>
         <v-row>
