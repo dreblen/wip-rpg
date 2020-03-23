@@ -149,12 +149,12 @@ export default new Vuex.Store({
 
         // Regenerate HP at 10% per encounter
         if (p.hp < p.maxHP) {
-          p.hp = Math.min(p.maxHP, p.hp + (p.maxHP * 0.1))
+          p.hp = Math.min(p.maxHP, Math.ceil(p.hp + (p.maxHP * 0.1)))
         }
 
         // Regenerate MP at 5% per encounter
         if (p.mp < p.maxMP) {
-          p.mp = Math.min(p.maxMP, p.mp + (p.maxMP * 0.05))
+          p.mp = Math.min(p.maxMP, Math.ceil(p.mp + (p.maxMP * 0.05)))
         }
       })
 
