@@ -45,7 +45,12 @@ export interface EnemyCombatantSet {
   max: number;
 }
 
+export interface EncounterAppearanceRange {
+  min: number | null;
+  max: number | null;
+}
 export interface EncounterSet {
+  ranges: Array<EncounterAppearanceRange>;
   enemies: Array<EnemyCombatantSet>;
 }
 

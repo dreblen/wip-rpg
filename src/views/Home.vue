@@ -66,9 +66,29 @@ export default Vue.extend({
   },
   methods: {
     generateEncounter () {
+      // Filter our sets to those that are allowed based on the number of
+      // previous encounters
+      const sets = this.encounterSets.filter((s: RPG.EncounterSet) => {
+        return s.ranges.reduce((c: boolean, r: RPG.EncounterAppearanceRange) => {
+          // If we've already found a match, don't keep checking
+          if (c === true) {
+            return true
+          }
+
+          // See if our current encounter index falls within the range
+          const min = r.min || 0
+          const max = r.max || Number.MAX_SAFE_INTEGER
+          if (this.encounter.index >= min && this.encounter.index <= max) {
+            return true
+          }
+
+          return false
+        }, false)
+      })
+
       // Pick a set
-      const i = Math.floor((Math.random() * this.encounterSets.length))
-      const set = this.encounterSets[i]
+      const i = Math.floor((Math.random() * sets.length))
+      const set = sets[i]
 
       // Populate the correct number of enemies
       this.enemies = []
@@ -127,11 +147,17 @@ export default Vue.extend({
     // Load in / Generate possible encounter descriptions
     this.encounterSets = [
       {
+        ranges: [
+          { min: null, max: 5 }
+        ],
         enemies: [
-          { type: 'DragonEnemy', min: 2, max: 3 }
+          { type: 'DragonEnemy', min: 1, max: 2 }
         ]
       },
       {
+        ranges: [
+          { min: 3, max: null }
+        ],
         enemies: [
           { type: 'DragonEnemy', min: 1, max: 2 },
           { type: 'SnakeEnemy', name: 'Serpentia', min: 1, max: 1 }
