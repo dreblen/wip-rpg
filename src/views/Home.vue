@@ -84,7 +84,7 @@ export default Vue.extend({
 
         // Generate the right number
         for (let i = 0; i < num; i++) {
-          this.enemies.push(new RPG.EnemyCombatant(group.type, group.name || t.name, 1, t.attributes))
+          this.enemies.push(new RPG.EnemyCombatant(group.type, group.name || t.name, Math.max(1, this.encounter.index / 5), t.attributes))
         }
       }
 
