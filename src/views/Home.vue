@@ -140,7 +140,7 @@ export default Vue.extend({
 
     // Load in / Generate possible enemy types
     this.enemyTypes = {
-      DragonEnemy: { name: 'Dragon', attributes: { phy: 1, end: 1 } },
+      DragonEnemy: { name: 'Dragon', attributes: { phy: 1, end: 2 } },
       SnakeEnemy: { name: 'Snake', attributes: { mag: 1, end: 1 } }
     }
 
