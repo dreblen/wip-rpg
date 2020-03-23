@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 
 // Import minimal type information
 import {
+  EncounterReward,
+  EncounterRewardType,
   Combatant,
   EnemyCombatant,
   PartyCombatant,
@@ -16,6 +18,7 @@ interface EncounterState {
   index: number;
   isActive: boolean;
   isSimulated: boolean;
+  rewards: Array<EncounterReward>;
   party: Array<PartyCombatant>;
   enemies: Array<EnemyCombatant>;
 }
@@ -33,6 +36,7 @@ export default new Vuex.Store({
       index: 0,
       isActive: false,
       isSimulated: false,
+      rewards: [],
       party: [],
       enemies: []
     }
@@ -85,6 +89,9 @@ export default new Vuex.Store({
     setEncounterActive: function (state: State, isActive: boolean) {
       state.encounter.isActive = isActive
     },
+    setEncounterRewards: function (state: State, rewards: Array<EncounterReward>) {
+      state.encounter.rewards = rewards
+    },
     setEncounterParty: function (state: State, p: Array<PartyCombatant>) {
       state.encounter.party = p
     },
@@ -97,6 +104,7 @@ export default new Vuex.Store({
       commit('increaseEncounterIndex')
       commit('setEncounterParty', payload.party)
       commit('setEncounterEnemies', payload.enemies)
+      commit('setEncounterRewards', payload.rewards)
       commit('setEncounterSimulated', payload.isSimulated)
       commit('setEncounterActive', true)
     },
@@ -157,6 +165,41 @@ export default new Vuex.Store({
           p.mp = Math.min(p.maxMP, Math.ceil(p.mp + (p.maxMP * 0.05)))
         }
       })
+
+      // Assign any rewards that apply to this encounter
+      if (living.length > 0) {
+        let haveReward = false
+        for (const r of state.encounter.rewards) {
+          // Stop if we've already received one of the possible rewards
+          if (haveReward) {
+            break
+          }
+
+          // Roll for the reward
+          let roll = Math.random()
+
+          // Boost the roll based on our living party's highest LCK attribute
+          const luck = living.reduce((c, p) => {
+            if (p.attributes.lck.value > c) {
+              return p.attributes.lck.value
+            } else {
+              return c
+            }
+          }, 0)
+          roll += (0.05 * luck)
+
+          // Assign the reward if appropriate
+          if (roll > (1 - r.chance)) {
+            haveReward = true
+
+            switch (r.type as EncounterRewardType) {
+              case EncounterRewardType.PartyMember:
+                commit('addPartyMember', new PartyCombatant('Friend', r.value))
+                break
+            }
+          }
+        }
+      }
 
       // Reset our encounter data
       commit('setEncounterParty', [])

@@ -49,8 +49,17 @@ export interface EncounterAppearanceRange {
   min: number | null;
   max: number | null;
 }
+export enum EncounterRewardType {
+  PartyMember
+}
+export interface EncounterReward {
+  chance: number;
+  type: EncounterRewardType;
+  value: AttributeValueList;
+}
 export interface EncounterSet {
   ranges: Array<EncounterAppearanceRange>;
+  rewards?: Array<EncounterReward>;
   enemies: Array<EnemyCombatantSet>;
 }
 

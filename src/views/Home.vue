@@ -8,6 +8,7 @@
       <v-card-text>
         <p>There is probably a {{ enemies[0].name }}</p>
         <p>TBD% chance of victory</p>
+        <p v-if="encounterRewards.length > 0">TBD% chance of other rewards</p>
       </v-card-text>
       <v-card-actions>
         <v-row>
@@ -55,6 +56,7 @@ export default Vue.extend({
   data: () => ({
     selectedParty: [],
     enemies: [] as Array<RPG.EnemyCombatant>,
+    encounterRewards: [] as Array<RPG.EncounterReward>,
     enemyTypes: {} as RPG.EnemyCombatantTypeList,
     encounterSets: [] as Array<RPG.EncounterSet>
   }),
@@ -90,6 +92,9 @@ export default Vue.extend({
       const i = Math.floor((Math.random() * sets.length))
       const set = sets[i]
 
+      // Populate the rewards for this encounter
+      this.encounterRewards = set.rewards || []
+
       // Populate the correct number of enemies
       this.enemies = []
       for (const group of set.enemies) {
@@ -115,7 +120,7 @@ export default Vue.extend({
     },
     startEncounter (isSimulated: boolean) {
       // Set our encounter combatants and begin
-      this.$store.dispatch('startEncounter', { enemies: this.enemies, party: this.selectedParty, isSimulated })
+      this.$store.dispatch('startEncounter', { enemies: this.enemies, party: this.selectedParty, rewards: this.encounterRewards, isSimulated })
       this.$router.push('/encounter')
     },
     skipEncounter () {
@@ -149,6 +154,9 @@ export default Vue.extend({
       {
         ranges: [
           { min: null, max: 5 }
+        ],
+        rewards: [
+          { chance: 0.3, type: RPG.EncounterRewardType.PartyMember, value: { phy: 3, end: 3 } }
         ],
         enemies: [
           { type: 'DragonEnemy', min: 1, max: 2 }
