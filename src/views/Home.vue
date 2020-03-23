@@ -115,7 +115,7 @@ export default Vue.extend({
     // Generate a player character
     if (this.party.length === 0) {
       // TODO: This should be a selection process on a character creation route
-      this.$store.commit('addPartyMember', new RPG.PartyCombatant('Hero', { phy: 1, end: 1 }))
+      this.$store.commit('addPartyMember', new RPG.PartyCombatant('Hero', { phy: 6, end: 3, ldr: 1 }))
     }
 
     // Load in / Generate possible enemy types
