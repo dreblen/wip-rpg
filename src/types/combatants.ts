@@ -1,3 +1,9 @@
+import {
+  ActionSelection,
+  EncounterAction,
+  EncounterActionResult
+} from './encounters'
+
 // Basic character attribute
 export class Attribute {
   value: number;
@@ -27,6 +33,8 @@ export interface AttributeList {
   ldr: Attribute; // leadership
   lck: Attribute; // luck
 }
+
+// Same as AttributeList but with numerical values only
 export interface AttributeValueList {
   [index: string]: number | undefined;
   phy?: number;
@@ -36,50 +44,11 @@ export interface AttributeValueList {
   ldr?: number;
   lck?: number;
 }
+
+// Attribute short names
 export type AttributeName = 'phy' | 'mag' | 'end' | 'agl' | 'ldr' | 'lck';
 
-export interface EnemyCombatantSet {
-  type: string;
-  name?: string;
-  min: number;
-  max: number;
-}
-
-export interface EncounterAppearanceRange {
-  min: number | null;
-  max: number | null;
-}
-export enum EncounterRewardType {
-  PartyMember
-}
-export interface EncounterReward {
-  chance: number;
-  type: EncounterRewardType;
-  value: AttributeValueList;
-}
-export interface EncounterSet {
-  ranges: Array<EncounterAppearanceRange>;
-  rewards?: Array<EncounterReward>;
-  enemies: Array<EnemyCombatantSet>;
-}
-
-export enum EncounterActionResult {
-  Success,
-  Miss,
-  Dodge
-}
-
-// Describes an action that a Combatant can take during an encounter
-export interface EncounterAction {
-  name: string;
-  affinities: Array<AttributeName>;
-  cost: { pool: 'hp' | 'mp'; value: number } | null;
-  actor: Combatant;
-  action: (targets: Array<Combatant>) => Array<EncounterActionResult>;
-}
-
-export type ActionSelection = [EncounterAction, Array<Combatant>]
-
+// Standard definitions of team affinity
 export enum CombatantTeam {
   None,
   Party,
@@ -227,6 +196,18 @@ export class Combatant {
   }
 }
 
+// Standard interface for defining enemy types
+export interface EnemyCombatantType {
+  name: string;
+  attributes: AttributeList | AttributeValueList;
+}
+
+// Allows enemy types to be defined dynamically and still viewed as valid
+export interface EnemyCombatantTypeList {
+  [index: string]: EnemyCombatantType;
+}
+
+// Non-party combatants
 export class EnemyCombatant extends Combatant {
   type: string;
 
@@ -255,16 +236,7 @@ export class EnemyCombatant extends Combatant {
   }
 }
 
-// Standard interface for defining enemy types
-export interface EnemyCombatantType {
-  name: string;
-  attributes: AttributeList | AttributeValueList;
-}
-
-export interface EnemyCombatantTypeList {
-  [index: string]: EnemyCombatantType;
-}
-
+// Party combatants
 export class PartyCombatant extends Combatant {
   encountersUntilAvailable: number;
   attributePointsAvailable: number;
