@@ -284,4 +284,17 @@ export class PartyCombatant extends Combatant {
       }
     }
   }
+
+  public increaseXP (amount: number) {
+    // Add the specified XP
+    this.xp += amount
+
+    // Increase the member's level if appropriate
+    while (this.xp >= this.maxXP) {
+      this.xp -= this.maxXP
+      this.level++
+      this.attributePointsAvailable += 2 + (this.level % 3)
+      this.maxXP = 100 * this.level * 1.3
+    }
+  }
 }
