@@ -186,9 +186,18 @@ export default new Vuex.Store({
             haveReward = true
 
             switch (r.type as EncounterRewardType) {
-              case EncounterRewardType.PartyMember:
-                commit('addPartyMember', new PartyCombatant('Friend', r.value))
+              case EncounterRewardType.PartyMember: {
+                // Determine our party's average level and make the new member
+                // match that, with some variation
+                const avgLevel = living.reduce((c, p) => {
+                  return p.level + c
+                }, 0) / living.length
+                const level = Math.ceil(avgLevel * Math.max(0.5, Math.min(1.5, Math.random() + 0.5)))
+
+                // Add the new party member
+                commit('addPartyMember', new PartyCombatant('Friend', r.value, level))
                 break
+              }
             }
           }
         }

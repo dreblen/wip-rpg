@@ -269,7 +269,7 @@ export class PartyCombatant extends Combatant {
   encountersUntilAvailable: number;
   attributePointsAvailable: number;
 
-  constructor (name: string, attributes: AttributeList | AttributeValueList) {
+  constructor (name: string, attributes: AttributeList | AttributeValueList, atLevel = 1) {
     super(name, attributes)
     this.team = CombatantTeam.Party
     this.isSimulated = false
@@ -283,6 +283,11 @@ export class PartyCombatant extends Combatant {
         this.increaseAttribute(name as AttributeName, this.attributes[name].value, true)
       }
     }
+
+    // Increase our stats according to the desired level
+    if (atLevel > 1) {
+      this.levelUp(atLevel - 1)
+    }
   }
 
   public increaseXP (amount: number) {
@@ -295,6 +300,18 @@ export class PartyCombatant extends Combatant {
       this.level++
       this.attributePointsAvailable += 2 + (this.level % 3)
       this.maxXP = 100 * this.level * 1.3
+    }
+  }
+
+  public levelUp (numLevels: number) {
+    // Nothing to do if no real change is requested
+    if (numLevels < 1) {
+      return
+    }
+
+    // Increase our experience to the limit the requested number of times
+    for (let i = 0; i < numLevels; i++) {
+      this.increaseXP(this.maxXP - this.xp)
     }
   }
 }
