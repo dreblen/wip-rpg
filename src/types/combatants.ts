@@ -194,6 +194,23 @@ export class Combatant {
         break
     }
   }
+
+  scaleAttributes (factor: number): number {
+    let totalDiff = 0
+
+    for (const a in this.attributes) {
+      const diff = this.attributes[a].scale(factor)
+
+      // See if there are side effects to changing this attribute
+      if (diff > 0) {
+        this.increaseAttribute(a as AttributeName, diff, true)
+      }
+
+      totalDiff += diff
+    }
+
+    return totalDiff
+  }
 }
 
 // Standard interface for defining enemy types
@@ -224,15 +241,7 @@ export class EnemyCombatant extends Combatant {
 
   levelUp (numLevels: number): void {
     this.level += numLevels
-
-    for (const a in this.attributes) {
-      const diff = this.attributes[a].scale(numLevels * 1.25)
-
-      // See if there are side effects to changing this attribute
-      if (diff > 0) {
-        this.increaseAttribute(a as AttributeName, diff, true)
-      }
-    }
+    this.scaleAttributes(numLevels * 1.25)
   }
 }
 
@@ -275,7 +284,7 @@ export class PartyCombatant extends Combatant {
     }
   }
 
-  public levelUp (numLevels: number) {
+  public levelUp (numLevels: number, assignAttributes = true) {
     // Nothing to do if no real change is requested
     if (numLevels < 1) {
       return
@@ -285,5 +294,65 @@ export class PartyCombatant extends Combatant {
     for (let i = 0; i < numLevels; i++) {
       this.increaseXP(this.maxXP - this.xp)
     }
+
+    // Assign any earned attribute points if requested
+    if (assignAttributes) {
+      this.assignAttributePoints()
+    }
+  }
+
+  public assignAttributePoints () {
+    // Nothing to do if we have no points available
+    if (this.attributePointsAvailable === 0) {
+      return
+    }
+
+    // Calculate how much we can safely scale our attributes
+    const total = Object.keys(this.attributes).reduce((c, a) => {
+      return c + this.attributes[a].value
+    }, 0)
+    const factor = 1 + ((total === 0) ? 0 : (this.attributePointsAvailable / total))
+
+    // Scale up our attributes
+    const diff = this.scaleAttributes(factor)
+
+    // Assign any leftovers that might exist as a result of using floor to scale
+    // up the attributes
+    if (diff < this.attributePointsAvailable) {
+      // Find out how many points we have to work with
+      let pts = this.attributePointsAvailable - diff
+
+      // Find a corresponding number of attributes, sorted by current value
+      let attrs = Object.keys(this.attributes).filter(a => this.attributes[a].value > 0).sort((a, b) => {
+        if (this.attributes[a].value > this.attributes[b].value) {
+          return -1
+        }
+        if (this.attributes[b].value > this.attributes[a].value) {
+          return 1
+        }
+        return 0
+      })
+      // - if we haven't assigned any points, assign what we have randomly
+      if (attrs.length === 0) {
+        attrs = Object.keys(this.attributes).sort(() => {
+          return Math.random() - 0.5
+        })
+      }
+      // - assign points sequentially until we're out of points
+      while (pts > 0) {
+        for (const a of attrs) {
+          if (pts === 0) {
+            break
+          }
+
+          this.increaseAttribute(a as AttributeName, 1)
+
+          pts--
+        }
+      }
+    }
+
+    // Clean up
+    this.attributePointsAvailable = 0
   }
 }
