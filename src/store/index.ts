@@ -195,7 +195,7 @@ export default new Vuex.Store({
                 const level = Math.ceil(avgLevel * Math.max(0.5, Math.min(1.5, Math.random() + 0.5)))
 
                 // Add the new party member
-                commit('addPartyMember', new PartyCombatant('Friend', r.value, level))
+                commit('addPartyMember', new PartyCombatant(r.value.name, r.value.attributes, level))
                 break
               }
             }

@@ -23,11 +23,17 @@ export enum EncounterRewardType {
   PartyMember
 }
 
+// PartyMember value for an EncounterReward
+export interface EncounterRewardValueForPartyMember {
+  name: string;
+  attributes: AttributeValueList;
+}
+
 // Details on an encounter's yielded reward
 export interface EncounterReward {
   chance: number;
   type: EncounterRewardType;
-  value: AttributeValueList;
+  value: EncounterRewardValueForPartyMember;
 }
 
 // Definition of what enemies may appear, when the set is valid, and what

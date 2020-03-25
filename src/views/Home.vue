@@ -156,7 +156,7 @@ export default Vue.extend({
           { min: null, max: 5 }
         ],
         rewards: [
-          { chance: 0.3, type: RPG.EncounterRewardType.PartyMember, value: { phy: 3, end: 3 } }
+          { chance: 1.0, type: RPG.EncounterRewardType.PartyMember, value: { name: 'Friend', attributes: { phy: 3, end: 6, lck: 1 } } }
         ],
         enemies: [
           { type: 'DragonEnemy', min: 1, max: 2 }
