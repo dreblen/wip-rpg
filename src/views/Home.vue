@@ -78,8 +78,14 @@ export default Vue.extend({
           }
 
           // See if our current encounter index falls within the range
-          const min = r.min || 0
-          const max = r.max || Number.MAX_SAFE_INTEGER
+          let min = 0
+          if (r.min !== null) {
+            min = r.min
+          }
+          let max = Number.MAX_SAFE_INTEGER
+          if (r.max !== null) {
+            max = r.max
+          }
           if (this.encounter.index >= min && this.encounter.index <= max) {
             return true
           }
