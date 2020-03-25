@@ -1,0 +1,7 @@
+[
+  {
+    "name":"Attack",
+    "cost": null,
+    "affinities": ["phy"]
+  }
+]

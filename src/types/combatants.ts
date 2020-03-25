@@ -4,6 +4,8 @@ import {
   EncounterActionResult
 } from './encounters'
 
+import EncounterActions from '@/types/actions.json'
+
 // Basic character attribute
 export class Attribute {
   value: number;
@@ -107,13 +109,7 @@ export class Combatant {
     }
 
     // Add basic actions
-    this.actions = [
-      {
-        name: 'Attack',
-        cost: null,
-        affinities: ['phy']
-      }
-    ]
+    this.actions = EncounterActions as Array<EncounterAction>
   }
 
   public takeAction (a: EncounterAction, targets: Array<Combatant>): Array<EncounterActionResult> {
