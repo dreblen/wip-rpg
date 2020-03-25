@@ -1,49 +1,6 @@
 import * as Encounters from './encounters'
+import * as Attributes from './attributes'
 import EncounterActions from './actions.json'
-
-// Basic character attribute
-export class Attribute {
-  value: number;
-  name: string;
-
-  constructor (name: string, value = 0) {
-    this.name = name
-    this.value = value
-  }
-
-  // Scales the attribute by the given factor and returns the level of change
-  scale (factor: number): number {
-    const first = this.value
-    this.value = Math.floor(this.value * factor)
-
-    return this.value - first
-  }
-}
-
-// Standard list of character attributes
-export interface AttributeList {
-  [index: string]: Attribute;
-  phy: Attribute; // physical
-  mag: Attribute; // magic
-  end: Attribute; // endurance
-  agl: Attribute; // agility
-  ldr: Attribute; // leadership
-  lck: Attribute; // luck
-}
-
-// Same as AttributeList but with numerical values only
-export interface AttributeValueList {
-  [index: string]: number | undefined;
-  phy?: number;
-  mag?: number;
-  end?: number;
-  agl?: number;
-  ldr?: number;
-  lck?: number;
-}
-
-// Attribute short names
-export type AttributeName = 'phy' | 'mag' | 'end' | 'agl' | 'ldr' | 'lck';
 
 // Standard definitions of team affinity
 export enum Team {
@@ -56,7 +13,7 @@ export enum Team {
 export class Combatant {
   id: number;
 
-  attributes: AttributeList;
+  attributes: Attributes.List;
   team: Team;
   name: string;
 
@@ -74,7 +31,7 @@ export class Combatant {
   mp: number;
   maxMP: number;
 
-  protected constructor (name: string, attributes: AttributeList | AttributeValueList) {
+  protected constructor (name: string, attributes: Attributes.List | Attributes.ValueList) {
     this.id = Math.random()
 
     this.level = 1
@@ -92,15 +49,15 @@ export class Combatant {
     // Use the given attributes as is, or convert their values into attribute
     // objects if necessary
     if (typeof attributes.phy === 'object') {
-      this.attributes = attributes as AttributeList
+      this.attributes = attributes as Attributes.List
     } else {
       this.attributes = {
-        phy: new Attribute('Physical', attributes.phy as number),
-        mag: new Attribute('Magic', attributes.mag as number),
-        end: new Attribute('Endurance', attributes.end as number),
-        agl: new Attribute('Agility', attributes.agl as number),
-        ldr: new Attribute('Leadership', attributes.ldr as number),
-        lck: new Attribute('Luck', attributes.lck as number)
+        phy: new Attributes.Attribute('Physical', attributes.phy as number),
+        mag: new Attributes.Attribute('Magic', attributes.mag as number),
+        end: new Attributes.Attribute('Endurance', attributes.end as number),
+        agl: new Attributes.Attribute('Agility', attributes.agl as number),
+        ldr: new Attributes.Attribute('Leadership', attributes.ldr as number),
+        lck: new Attributes.Attribute('Luck', attributes.lck as number)
       }
     }
 
@@ -198,7 +155,7 @@ export class Combatant {
     return [action, [opposingCombatants[0]]]
   }
 
-  public increaseAttribute (name: AttributeName, increase: number, sideEffectsOnly = false): void {
+  public increaseAttribute (name: Attributes.Name, increase: number, sideEffectsOnly = false): void {
     // Make sure we have a valid increase
     if (increase < 1) {
       throw new Error('Increase must be a positive number')
@@ -232,7 +189,7 @@ export class Combatant {
 
       // See if there are side effects to changing this attribute
       if (diff > 0) {
-        this.increaseAttribute(a as AttributeName, diff, true)
+        this.increaseAttribute(a as Attributes.Name, diff, true)
       }
 
       totalDiff += diff
@@ -245,7 +202,7 @@ export class Combatant {
 // Standard interface for defining enemy types
 export interface EnemyCombatantType {
   name: string;
-  attributes: AttributeList | AttributeValueList;
+  attributes: Attributes.List | Attributes.ValueList;
 }
 
 // Allows enemy types to be defined dynamically and still viewed as valid
@@ -257,7 +214,7 @@ export interface EnemyCombatantTypeList {
 export class EnemyCombatant extends Combatant {
   type: string;
 
-  constructor (type: string, name: string, atLevel = 1, attributes: AttributeList | AttributeValueList) {
+  constructor (type: string, name: string, atLevel = 1, attributes: Attributes.List | Attributes.ValueList) {
     super(name, attributes)
     this.type = type
     this.team = Team.Enemy
@@ -279,7 +236,7 @@ export class PartyCombatant extends Combatant {
   encountersUntilAvailable: number;
   attributePointsAvailable: number;
 
-  constructor (name: string, attributes: AttributeList | AttributeValueList, atLevel = 1) {
+  constructor (name: string, attributes: Attributes.List | Attributes.ValueList, atLevel = 1) {
     super(name, attributes)
     this.team = Team.Party
     this.isSimulated = false
@@ -290,7 +247,7 @@ export class PartyCombatant extends Combatant {
     // Make sure we benefit from the side effects of our initial attributes
     for (const name in this.attributes) {
       if (this.attributes[name].value > 0) {
-        this.increaseAttribute(name as AttributeName, this.attributes[name].value, true)
+        this.increaseAttribute(name as Attributes.Name, this.attributes[name].value, true)
       }
     }
 
@@ -374,7 +331,7 @@ export class PartyCombatant extends Combatant {
             break
           }
 
-          this.increaseAttribute(a as AttributeName, 1)
+          this.increaseAttribute(a as Attributes.Name, 1)
 
           pts--
         }

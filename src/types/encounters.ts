@@ -1,3 +1,4 @@
+import * as Attributes from './attributes'
 import * as Combatants from './combatants'
 
 // A group of enemies that go together, possibly with a unique name
@@ -22,7 +23,7 @@ export enum RewardType {
 // PartyMember value for an EncounterReward
 export interface RewardValueForPartyMember {
   name: string;
-  attributes: Combatants.AttributeValueList;
+  attributes: Attributes.ValueList;
 }
 
 // Details on an encounter's yielded reward
@@ -53,7 +54,7 @@ export interface Action {
   type: ActionType;
   description: string;
   executionCount: { min: number; max: number };
-  affinities: Array<Combatants.AttributeName>;
+  affinities: Array<Attributes.Name>;
   cost: { pool: 'hp' | 'mp'; value: number } | null;
 }
 
@@ -68,7 +69,7 @@ export interface ActionAttack extends Action {
 }
 
 export interface ActionBuff extends Action {
-  attributes: Combatants.AttributeValueList;
+  attributes: Attributes.ValueList;
 }
 
 // Combination of an action and one or more action targets

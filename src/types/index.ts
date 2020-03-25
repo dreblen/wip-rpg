@@ -1,8 +1,10 @@
 // Import our submodules and re-export them using module names
+import * as Attributes from './attributes'
 import * as Combatants from './combatants'
 import * as Encounters from './encounters'
 
 export {
+  Attributes,
   Combatants,
   Encounters
 }

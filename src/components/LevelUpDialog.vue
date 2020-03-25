@@ -41,14 +41,14 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { AttributeList, AttributeName } from '@/types/combatants'
+import * as Attributes from '@/types/attributes'
 
 export default Vue.extend({
   name: 'LevelUpDialog',
   data: () => ({
     availablePoints: 0,
-    baseAttributes: undefined as AttributeList | undefined,
-    tempAttributes: undefined as AttributeList | undefined,
+    baseAttributes: undefined as Attributes.List | undefined,
+    tempAttributes: undefined as Attributes.List | undefined,
     showDialog: false
   }),
   props: {
@@ -81,7 +81,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    assignAttribute (i: AttributeName): void {
+    assignAttribute (i: Attributes.Name): void {
       if (this.tempAttributes === undefined) {
         return
       }
@@ -89,7 +89,7 @@ export default Vue.extend({
       this.tempAttributes[i].value++
       this.availablePoints--
     },
-    removeAttribute (i: AttributeName): void {
+    removeAttribute (i: Attributes.Name): void {
       if (this.tempAttributes === undefined) {
         return
       }
