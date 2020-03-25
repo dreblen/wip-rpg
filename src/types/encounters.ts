@@ -54,10 +54,21 @@ export enum EncounterActionResult {
 // Describes an action that a Combatant can take during an encounter
 export interface EncounterAction {
   name: string;
+  type: EncounterActionType;
   description: string;
   executionCount: { min: number; max: number };
   affinities: Array<AttributeName>;
   cost: { pool: 'hp' | 'mp'; value: number } | null;
+}
+
+export type EncounterActionType = 'EncounterActionAttack';
+
+export interface EncounterActionAttack extends EncounterAction {
+  damage: number;
+  rates: {
+    hit: number;
+    dodge: number;
+  };
 }
 
 // Combination of an action and one or more action targets
