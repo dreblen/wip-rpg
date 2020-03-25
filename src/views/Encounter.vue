@@ -39,13 +39,13 @@ import * as RPG from '@/types'
 export default Vue.extend({
   name: 'Encounter',
   data: () => ({
-    combatants: [] as Array<RPG.Combatant>,
+    combatants: [] as Array<RPG.Combatants.Combatant>,
 
     simulationDelay: 750,
 
-    pendingUserAction: null as RPG.EncounterAction | null,
-    userAction: null as Promise<RPG.ActionSelection> | null,
-    resolveUserAction: null as ((value: RPG.ActionSelection) => void) | null,
+    pendingUserAction: null as RPG.Encounters.Action | null,
+    userAction: null as Promise<RPG.Encounters.ActionSelection> | null,
+    resolveUserAction: null as ((value: RPG.Encounters.ActionSelection) => void) | null,
     turnIndex: 0
   }),
   computed: {
@@ -55,7 +55,7 @@ export default Vue.extend({
     ...mapGetters([
       'winningTeam'
     ]),
-    currentCombatant (): RPG.Combatant | null {
+    currentCombatant (): RPG.Combatants.Combatant | null {
       if (this.combatants.length === 0) {
         return null
       } else {
@@ -64,7 +64,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    onTargetSelected (target: RPG.Combatant): void {
+    onTargetSelected (target: RPG.Combatants.Combatant): void {
       // XXX: Double-clicking makes the action run twice?
       // We shouldn't be here if we don't already have an action pending
       if (this.pendingUserAction === null || this.resolveUserAction === null) {
@@ -73,7 +73,7 @@ export default Vue.extend({
 
       this.resolveUserAction([this.pendingUserAction, [target]])
     },
-    onActionSelected (action: RPG.EncounterAction): void {
+    onActionSelected (action: RPG.Encounters.Action): void {
       this.pendingUserAction = action
     },
     async takeTurn () {
@@ -83,7 +83,7 @@ export default Vue.extend({
       }
 
       // Check if the encounter is finished
-      if (this.winningTeam !== RPG.CombatantTeam.None) {
+      if (this.winningTeam !== RPG.Combatants.Team.None) {
         this.$store.dispatch('finishEncounter')
         this.$router.push('/')
         return
@@ -103,13 +103,13 @@ export default Vue.extend({
 
       if (canTakeTurn) {
         // Show selection UI or simulate action selection
-        let selection: RPG.ActionSelection
+        let selection: RPG.Encounters.ActionSelection
         if (this.currentCombatant.isSimulated || this.encounter.isSimulated) {
           // Get the simulated selection on a delay so the user has time to see
           // what's happening
           selection = await new Promise((resolve) => {
             setTimeout(() => {
-              resolve((this.currentCombatant as RPG.Combatant).getSelectedAction(this.combatants))
+              resolve((this.currentCombatant as RPG.Combatants.Combatant).getSelectedAction(this.combatants))
             }, this.simulationDelay)
           })
         } else {
@@ -132,7 +132,7 @@ export default Vue.extend({
         // - Take the action the proper number of times
         for (let i = 0; i < count; i++) {
           const r = this.currentCombatant.takeAction(selection[0], selection[1], i !== 0)
-          console.log('--> ', r.map((r) => { return RPG.EncounterActionResult[r] }))
+          console.log('--> ', r.map((r) => { return RPG.Encounters.ActionResult[r] }))
 
           // If our targets are all defeated, we don't need to continue
           if (selection[1].reduce((c, e) => { return c + e.hp }, 0) === 0) {

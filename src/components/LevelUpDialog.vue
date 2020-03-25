@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { AttributeList, AttributeName } from '@/types'
+import { AttributeList, AttributeName } from '@/types/combatants'
 
 export default Vue.extend({
   name: 'LevelUpDialog',

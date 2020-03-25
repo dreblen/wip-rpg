@@ -1,7 +1,7 @@
 [
   {
     "name": "Attack",
-    "type": "EncounterActionAttack",
+    "type": "ActionAttack",
     "description": "A single physical attack against one enemy.",
     "executionCount": {
       "min": 1,
@@ -17,7 +17,7 @@
   },
   {
     "name": "Defend",
-    "type": "EncounterActionBuff",
+    "type": "ActionBuff",
     "description": "Increases endurance for a single party member.",
     "executionCount": {
       "min": 1,
@@ -29,7 +29,7 @@
   },
   {
     "name": "Multi-Attack",
-    "type": "EncounterActionAttack",
+    "type": "ActionAttack",
     "description": "3-5 physical attacks against one enemy.",
     "executionCount": {
       "min": 3,
@@ -48,7 +48,7 @@
   },
   {
     "name": "Magic Attack",
-    "type": "EncounterActionAttack",
+    "type": "ActionAttack",
     "description": "A single magic attack against one enemy.",
     "executionCount": {
       "min": 1,

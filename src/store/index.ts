@@ -1,15 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-// Import minimal type information
-import {
-  EncounterReward,
-  EncounterRewardType,
-  Combatant,
-  EnemyCombatant,
-  PartyCombatant,
-  CombatantTeam
-} from '@/types'
+// Import type information
+import * as RPG from '@/types'
 
 Vue.use(Vuex)
 
@@ -18,13 +11,13 @@ interface EncounterState {
   index: number;
   isActive: boolean;
   isSimulated: boolean;
-  rewards: Array<EncounterReward>;
-  party: Array<PartyCombatant>;
-  enemies: Array<EnemyCombatant>;
+  rewards: Array<RPG.Encounters.Reward>;
+  party: Array<RPG.Combatants.PartyCombatant>;
+  enemies: Array<RPG.Combatants.EnemyCombatant>;
 }
 
 interface State {
-  party: Array<PartyCombatant>;
+  party: Array<RPG.Combatants.PartyCombatant>;
   encounter: EncounterState;
 }
 
@@ -43,11 +36,11 @@ export default new Vuex.Store({
   },
   getters: {
     // Evaluates whether either team has won the encounter yet
-    winningTeam: function (state: State): CombatantTeam {
-      let winner = CombatantTeam.None
+    winningTeam: function (state: State): RPG.Combatants.Team {
+      let winner = RPG.Combatants.Team.None
 
       // Store our reduce method since we're going to use it twice
-      const r = (collector: boolean, combatant: Combatant) => {
+      const r = (collector: boolean, combatant: RPG.Combatants.Combatant) => {
         // If we've found a living combatant, we don't need to check more
         if (collector === false) {
           return false
@@ -64,19 +57,19 @@ export default new Vuex.Store({
 
       // Check if all party members are dead, or then if all enemies are dead
       if (state.encounter.party.reduce(r, true) === true) {
-        winner = CombatantTeam.Enemy
+        winner = RPG.Combatants.Team.Enemy
       } else if (state.encounter.enemies.reduce(r, true) === true) {
-        winner = CombatantTeam.Party
+        winner = RPG.Combatants.Team.Party
       }
 
       return winner
     }
   },
   mutations: {
-    addPartyMember: function (state: State, p: PartyCombatant) {
+    addPartyMember: function (state: State, p: RPG.Combatants.PartyCombatant) {
       state.party.push(p)
     },
-    removePartyMember: function (state: State, p: PartyCombatant) {
+    removePartyMember: function (state: State, p: RPG.Combatants.PartyCombatant) {
       const i = state.party.findIndex(o => o.id === p.id)
       state.party.splice(i, 1)
     },
@@ -89,13 +82,13 @@ export default new Vuex.Store({
     setEncounterActive: function (state: State, isActive: boolean) {
       state.encounter.isActive = isActive
     },
-    setEncounterRewards: function (state: State, rewards: Array<EncounterReward>) {
+    setEncounterRewards: function (state: State, rewards: Array<RPG.Encounters.Reward>) {
       state.encounter.rewards = rewards
     },
-    setEncounterParty: function (state: State, p: Array<PartyCombatant>) {
+    setEncounterParty: function (state: State, p: Array<RPG.Combatants.PartyCombatant>) {
       state.encounter.party = p
     },
-    setEncounterEnemies: function (state: State, e: Array<EnemyCombatant>) {
+    setEncounterEnemies: function (state: State, e: Array<RPG.Combatants.EnemyCombatant>) {
       state.encounter.enemies = e
     }
   },
@@ -195,8 +188,8 @@ export default new Vuex.Store({
           if (roll > (1 - r.chance)) {
             haveReward = true
 
-            switch (r.type as EncounterRewardType) {
-              case EncounterRewardType.PartyMember: {
+            switch (r.type as RPG.Encounters.RewardType) {
+              case RPG.Encounters.RewardType.PartyMember: {
                 // Determine our party's average level and make the new member
                 // match that, with some variation
                 const avgLevel = living.reduce((c, p) => {
@@ -205,7 +198,7 @@ export default new Vuex.Store({
                 const level = Math.ceil(avgLevel * Math.max(0.5, Math.min(1.5, Math.random() + 0.5)))
 
                 // Add the new party member
-                commit('addPartyMember', new PartyCombatant(r.value.name, r.value.attributes, level))
+                commit('addPartyMember', new RPG.Combatants.PartyCombatant(r.value.name, r.value.attributes, level))
                 break
               }
             }

@@ -1,13 +1,5 @@
-import {
-  ActionSelection,
-  EncounterAction,
-  EncounterActionType,
-  EncounterActionAttack,
-  EncounterActionBuff,
-  EncounterActionResult
-} from './encounters'
-
-import EncounterActions from '@/types/actions.json'
+import * as Encounters from './encounters'
+import EncounterActions from './actions.json'
 
 // Basic character attribute
 export class Attribute {
@@ -54,7 +46,7 @@ export interface AttributeValueList {
 export type AttributeName = 'phy' | 'mag' | 'end' | 'agl' | 'ldr' | 'lck';
 
 // Standard definitions of team affinity
-export enum CombatantTeam {
+export enum Team {
   None,
   Party,
   Enemy,
@@ -65,10 +57,10 @@ export class Combatant {
   id: number;
 
   attributes: AttributeList;
-  team: CombatantTeam;
+  team: Team;
   name: string;
 
-  actions: Array<EncounterAction>;
+  actions: Array<Encounters.Action>;
   actionHooks: Array<() => void>;
 
   isSimulated: boolean;
@@ -94,7 +86,7 @@ export class Combatant {
 
     this.name = name
 
-    this.team = CombatantTeam.None
+    this.team = Team.None
     this.isSimulated = true
 
     // Use the given attributes as is, or convert their values into attribute
@@ -113,11 +105,11 @@ export class Combatant {
     }
 
     // Add basic actions
-    this.actions = EncounterActions as Array<EncounterAction>
+    this.actions = EncounterActions as Array<Encounters.Action>
     this.actionHooks = []
   }
 
-  public takeAction (action: EncounterAction, targets: Array<Combatant>, ignoreCost = false): Array<EncounterActionResult> {
+  public takeAction (action: Encounters.Action, targets: Array<Combatant>, ignoreCost = false): Array<Encounters.ActionResult> {
     const results = []
 
     // Honor the cost of the action
@@ -127,14 +119,14 @@ export class Combatant {
 
     // Perform our action on all specified targets
     for (const target of targets) {
-      switch (action.type as EncounterActionType) {
-        case 'EncounterActionAttack': {
-          const a: EncounterActionAttack = action as EncounterActionAttack
+      switch (action.type as Encounters.ActionType) {
+        case 'ActionAttack': {
+          const a: Encounters.ActionAttack = action as Encounters.ActionAttack
           // Roll for hit
           const hitRate = a.rates.hit // TODO: Should be based on equipment
           let roll = Math.random()
           if (roll > hitRate) {
-            results.push(EncounterActionResult.Miss)
+            results.push(Encounters.ActionResult.Miss)
             continue
           }
 
@@ -146,7 +138,7 @@ export class Combatant {
           const maxChange = 1 - dodgeRate
           roll += (maxChange - (maxChange / (Math.abs(diff / 15) + 1))) * (diff / Math.abs(diff))
           if (roll < dodgeRate) {
-            results.push(EncounterActionResult.Dodge)
+            results.push(Encounters.ActionResult.Dodge)
             continue
           }
 
@@ -162,11 +154,11 @@ export class Combatant {
           }
           target.hp = Math.max(0, target.hp - Math.ceil(base))
 
-          results.push(EncounterActionResult.Success)
+          results.push(Encounters.ActionResult.Success)
           break
         }
-        case 'EncounterActionBuff': {
-          const a: EncounterActionBuff = action as EncounterActionBuff
+        case 'ActionBuff': {
+          const a: Encounters.ActionBuff = action as Encounters.ActionBuff
 
           // TODO: Alter the buff based on attribute affinities
 
@@ -189,7 +181,7 @@ export class Combatant {
     return results
   }
 
-  public getSelectedAction (combatants: Array<Combatant>): ActionSelection {
+  public getSelectedAction (combatants: Array<Combatant>): Encounters.ActionSelection {
     // Select an action
     const actions = this.actions.filter((a) => {
       if (a.cost === null) {
@@ -268,7 +260,7 @@ export class EnemyCombatant extends Combatant {
   constructor (type: string, name: string, atLevel = 1, attributes: AttributeList | AttributeValueList) {
     super(name, attributes)
     this.type = type
-    this.team = CombatantTeam.Enemy
+    this.team = Team.Enemy
 
     // Increase our stats according to the desired level
     if (atLevel > 1) {
@@ -289,7 +281,7 @@ export class PartyCombatant extends Combatant {
 
   constructor (name: string, attributes: AttributeList | AttributeValueList, atLevel = 1) {
     super(name, attributes)
-    this.team = CombatantTeam.Party
+    this.team = Team.Party
     this.isSimulated = false
 
     this.encountersUntilAvailable = 0

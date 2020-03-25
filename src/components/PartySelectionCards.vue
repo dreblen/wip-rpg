@@ -87,7 +87,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapState } from 'vuex'
-import { PartyCombatant } from '@/types'
+import { PartyCombatant } from '@/types/combatants'
 
 import LevelUpDialog from '@/components/LevelUpDialog.vue'
 

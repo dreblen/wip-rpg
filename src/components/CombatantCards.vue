@@ -43,7 +43,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Combatant } from '@/types'
+import { Combatant } from '@/types/combatants'
 
 export default Vue.extend({
   name: 'CombatantCards',

@@ -55,10 +55,10 @@ export default Vue.extend({
   name: 'Home',
   data: () => ({
     selectedParty: [],
-    enemies: [] as Array<RPG.EnemyCombatant>,
-    encounterRewards: [] as Array<RPG.EncounterReward>,
-    enemyTypes: {} as RPG.EnemyCombatantTypeList,
-    encounterSets: [] as Array<RPG.EncounterSet>
+    enemies: [] as Array<RPG.Combatants.EnemyCombatant>,
+    encounterRewards: [] as Array<RPG.Encounters.Reward>,
+    enemyTypes: {} as RPG.Combatants.EnemyCombatantTypeList,
+    encounterSets: [] as Array<RPG.Encounters.Set>
   }),
   computed: {
     ...mapState([
@@ -70,8 +70,8 @@ export default Vue.extend({
     generateEncounter () {
       // Filter our sets to those that are allowed based on the number of
       // previous encounters
-      const sets = this.encounterSets.filter((s: RPG.EncounterSet) => {
-        return s.ranges.reduce((c: boolean, r: RPG.EncounterAppearanceRange) => {
+      const sets = this.encounterSets.filter((s: RPG.Encounters.Set) => {
+        return s.ranges.reduce((c: boolean, r: RPG.Encounters.AppearanceRange) => {
           // If we've already found a match, don't keep checking
           if (c === true) {
             return true
@@ -115,7 +115,7 @@ export default Vue.extend({
 
         // Generate the right number
         for (let i = 0; i < num; i++) {
-          this.enemies.push(new RPG.EnemyCombatant(group.type, group.name || t.name, Math.max(1, this.encounter.index / 5), t.attributes))
+          this.enemies.push(new RPG.Combatants.EnemyCombatant(group.type, group.name || t.name, Math.max(1, this.encounter.index / 5), t.attributes))
         }
       }
 
@@ -146,7 +146,7 @@ export default Vue.extend({
     // Generate a player character
     if (this.party.length === 0) {
       // TODO: This should be a selection process on a character creation route
-      this.$store.commit('addPartyMember', new RPG.PartyCombatant('Hero', { phy: 6, end: 3, ldr: 1 }))
+      this.$store.commit('addPartyMember', new RPG.Combatants.PartyCombatant('Hero', { phy: 6, end: 3, ldr: 1 }))
     }
 
     // Load in / Generate possible enemy types
@@ -162,7 +162,7 @@ export default Vue.extend({
           { min: 0, max: 0 }
         ],
         rewards: [
-          { chance: 1.0, type: RPG.EncounterRewardType.PartyMember, value: { name: 'Friend', attributes: { phy: 3, end: 6, lck: 1 } } }
+          { chance: 1.0, type: RPG.Encounters.RewardType.PartyMember, value: { name: 'Friend', attributes: { phy: 3, end: 6, lck: 1 } } }
         ],
         enemies: [
           { type: 'DragonEnemy', min: 1, max: 1 }
