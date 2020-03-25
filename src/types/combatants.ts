@@ -1,6 +1,6 @@
-import * as Encounters from './encounters'
+import * as Actions from './actions'
 import * as Attributes from './attributes'
-import EncounterActions from './actions.json'
+import ActionDefinitions from './actions.json'
 
 // Standard definitions of team affinity
 export enum Team {
@@ -17,7 +17,7 @@ export class Combatant {
   team: Team;
   name: string;
 
-  actions: Array<Encounters.Action>;
+  actions: Array<Actions.Action>;
   actionHooks: Array<() => void>;
 
   isSimulated: boolean;
@@ -62,11 +62,11 @@ export class Combatant {
     }
 
     // Add basic actions
-    this.actions = EncounterActions as Array<Encounters.Action>
+    this.actions = ActionDefinitions as Array<Actions.Action>
     this.actionHooks = []
   }
 
-  public takeAction (action: Encounters.Action, targets: Array<Combatant>, ignoreCost = false): Array<Encounters.ActionResult> {
+  public takeAction (action: Actions.Action, targets: Array<Combatant>, ignoreCost = false): Array<Actions.Result> {
     const results = []
 
     // Honor the cost of the action
@@ -76,14 +76,14 @@ export class Combatant {
 
     // Perform our action on all specified targets
     for (const target of targets) {
-      switch (action.type as Encounters.ActionType) {
-        case 'ActionAttack': {
-          const a: Encounters.ActionAttack = action as Encounters.ActionAttack
+      switch (action.type as Actions.Type) {
+        case 'Attack': {
+          const a: Actions.Attack = action as Actions.Attack
           // Roll for hit
           const hitRate = a.rates.hit // TODO: Should be based on equipment
           let roll = Math.random()
           if (roll > hitRate) {
-            results.push(Encounters.ActionResult.Miss)
+            results.push(Actions.Result.Miss)
             continue
           }
 
@@ -95,7 +95,7 @@ export class Combatant {
           const maxChange = 1 - dodgeRate
           roll += (maxChange - (maxChange / (Math.abs(diff / 15) + 1))) * (diff / Math.abs(diff))
           if (roll < dodgeRate) {
-            results.push(Encounters.ActionResult.Dodge)
+            results.push(Actions.Result.Dodge)
             continue
           }
 
@@ -111,11 +111,11 @@ export class Combatant {
           }
           target.hp = Math.max(0, target.hp - Math.ceil(base))
 
-          results.push(Encounters.ActionResult.Success)
+          results.push(Actions.Result.Success)
           break
         }
-        case 'ActionBuff': {
-          const a: Encounters.ActionBuff = action as Encounters.ActionBuff
+        case 'Buff': {
+          const a: Actions.Buff = action as Actions.Buff
 
           // TODO: Alter the buff based on attribute affinities
 
@@ -138,7 +138,7 @@ export class Combatant {
     return results
   }
 
-  public getSelectedAction (combatants: Array<Combatant>): Encounters.ActionSelection {
+  public getSelectedAction (combatants: Array<Combatant>): Actions.Selection {
     // Select an action
     const actions = this.actions.filter((a) => {
       if (a.cost === null) {

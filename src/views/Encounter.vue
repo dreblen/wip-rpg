@@ -43,9 +43,9 @@ export default Vue.extend({
 
     simulationDelay: 750,
 
-    pendingUserAction: null as RPG.Encounters.Action | null,
-    userAction: null as Promise<RPG.Encounters.ActionSelection> | null,
-    resolveUserAction: null as ((value: RPG.Encounters.ActionSelection) => void) | null,
+    pendingUserAction: null as RPG.Actions.Action | null,
+    userAction: null as Promise<RPG.Actions.Selection> | null,
+    resolveUserAction: null as ((value: RPG.Actions.Selection) => void) | null,
     turnIndex: 0
   }),
   computed: {
@@ -73,7 +73,7 @@ export default Vue.extend({
 
       this.resolveUserAction([this.pendingUserAction, [target]])
     },
-    onActionSelected (action: RPG.Encounters.Action): void {
+    onActionSelected (action: RPG.Actions.Action): void {
       this.pendingUserAction = action
     },
     async takeTurn () {
@@ -103,7 +103,7 @@ export default Vue.extend({
 
       if (canTakeTurn) {
         // Show selection UI or simulate action selection
-        let selection: RPG.Encounters.ActionSelection
+        let selection: RPG.Actions.Selection
         if (this.currentCombatant.isSimulated || this.encounter.isSimulated) {
           // Get the simulated selection on a delay so the user has time to see
           // what's happening
@@ -132,7 +132,7 @@ export default Vue.extend({
         // - Take the action the proper number of times
         for (let i = 0; i < count; i++) {
           const r = this.currentCombatant.takeAction(selection[0], selection[1], i !== 0)
-          console.log('--> ', r.map((r) => { return RPG.Encounters.ActionResult[r] }))
+          console.log('--> ', r.map((r) => { return RPG.Actions.Result[r] }))
 
           // If our targets are all defeated, we don't need to continue
           if (selection[1].reduce((c, e) => { return c + e.hp }, 0) === 0) {

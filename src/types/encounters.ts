@@ -1,5 +1,4 @@
 import * as Attributes from './attributes'
-import * as Combatants from './combatants'
 
 // A group of enemies that go together, possibly with a unique name
 export interface EnemyCombatantSet {
@@ -40,37 +39,3 @@ export interface Set {
   rewards?: Array<Reward>;
   enemies: Array<EnemyCombatantSet>;
 }
-
-// Types of results that an action may yield
-export enum ActionResult {
-  Success,
-  Miss,
-  Dodge,
-}
-
-// Describes an action that a Combatant can take during an encounter
-export interface Action {
-  name: string;
-  type: ActionType;
-  description: string;
-  executionCount: { min: number; max: number };
-  affinities: Array<Attributes.Name>;
-  cost: { pool: 'hp' | 'mp'; value: number } | null;
-}
-
-export type ActionType = 'ActionAttack' | 'ActionBuff';
-
-export interface ActionAttack extends Action {
-  damage: number;
-  rates: {
-    hit: number;
-    dodge: number;
-  };
-}
-
-export interface ActionBuff extends Action {
-  attributes: Attributes.ValueList;
-}
-
-// Combination of an action and one or more action targets
-export type ActionSelection = [Action, Array<Combatants.Combatant>]
