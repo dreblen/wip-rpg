@@ -110,7 +110,7 @@ export default Vue.extend({
         // Get a number between our min and max if they're different
         let num = group.min
         if (group.min < group.max) {
-          num = RPG.RandomIntBetween(group.min, group.max)
+          num = RPG.getRandomIntBetween(group.min, group.max)
         }
 
         // Generate the right number
