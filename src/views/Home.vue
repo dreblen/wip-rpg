@@ -159,13 +159,21 @@ export default Vue.extend({
     this.encounterSets = [
       {
         ranges: [
-          { min: null, max: 5 }
+          { min: 0, max: 0 }
         ],
         rewards: [
           { chance: 1.0, type: RPG.EncounterRewardType.PartyMember, value: { name: 'Friend', attributes: { phy: 3, end: 6, lck: 1 } } }
         ],
         enemies: [
-          { type: 'DragonEnemy', min: 1, max: 2 }
+          { type: 'DragonEnemy', min: 1, max: 1 }
+        ]
+      },
+      {
+        ranges: [
+          { min: 1, max: 5 }
+        ],
+        enemies: [
+          { type: 'DragonEnemy', min: 2, max: 3 }
         ]
       },
       {
