@@ -8,7 +8,12 @@
       "max": 1
     },
     "cost": null,
-    "affinities": ["phy"]
+    "affinities": ["phy"],
+    "damage": 5,
+    "rates": {
+      "hit": 0.95,
+      "dodge": 0.05
+    }
   },
   {
     "name": "Multi-Attack",
@@ -22,7 +27,12 @@
       "pool": "mp",
       "value": 10
     },
-    "affinities": ["phy"]
+    "affinities": ["phy"],
+    "damage": 5,
+    "rates": {
+      "hit": 0.8,
+      "dodge": 0.05
+    }
   },
   {
     "name": "Magic Attack",
@@ -36,6 +46,11 @@
       "pool": "mp",
       "value": 5
     },
-    "affinities": ["mag"]
+    "affinities": ["mag"],
+    "damage": 5,
+    "rates": {
+      "hit": 0.95,
+      "dodge": 0.05
+    }
   }
 ]

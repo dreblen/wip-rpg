@@ -128,7 +128,7 @@ export class Combatant {
         case 'EncounterActionAttack': {
           const a: EncounterActionAttack = action as EncounterActionAttack
           // Roll for hit
-          const hitRate = 0.95 // TODO: Should be based on equipment
+          const hitRate = a.rates.hit // TODO: Should be based on equipment
           let roll = Math.random()
           if (roll > hitRate) {
             results.push(EncounterActionResult.Miss)
@@ -136,7 +136,7 @@ export class Combatant {
           }
 
           // Roll for dodge
-          const dodgeRate = 0.05 // TODO: Should be based on equipment
+          const dodgeRate = a.rates.dodge // TODO: Should be based on equipment
           roll = Math.random()
           // - relative agility increases or decreases the roll
           const diff = this.attributes.agl.value - target.attributes.agl.value
@@ -149,7 +149,7 @@ export class Combatant {
 
           // Roll for damage
           // - base damage is our primary attribute minus the target's defense
-          let base = 5 * Math.max(1, this.attributes[a.affinities[0]].value - target.attributes.end.value)
+          let base = a.damage * Math.max(1, this.attributes[a.affinities[0]].value - target.attributes.end.value)
           // - randomize the base damage slightly
           base *= Math.max(0.9, Math.min(1.1, Math.random() + 0.5))
           // - increase our base damage by attribute factors
