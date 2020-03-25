@@ -1,11 +1,13 @@
 [
   {
-    "name":"Attack",
+    "name": "Attack",
+    "description": "A single physical attack against one enemy.",
     "cost": null,
     "affinities": ["phy"]
   },
   {
-    "name":"Magic Attack",
+    "name": "Magic Attack",
+    "description": "A single magic attack against one enemy.",
     "cost": {
       "pool": "mp",
       "value": 5

@@ -54,6 +54,7 @@ export enum EncounterActionResult {
 // Describes an action that a Combatant can take during an encounter
 export interface EncounterAction {
   name: string;
+  description: string;
   affinities: Array<AttributeName>;
   cost: { pool: 'hp' | 'mp'; value: number } | null;
 }

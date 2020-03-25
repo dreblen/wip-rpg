@@ -22,6 +22,7 @@
         >
           {{ action.name }}
         </v-btn>
+        <p v-if="pendingUserAction">{{ pendingUserAction.description }}</p>
       </template>
       <combatant-cards v-model="encounter.party" @click="onTargetSelected" />
     </template>
