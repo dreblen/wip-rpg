@@ -55,6 +55,7 @@ export enum EncounterActionResult {
 export interface EncounterAction {
   name: string;
   description: string;
+  executionCount: { min: number; max: number };
   affinities: Array<AttributeName>;
   cost: { pool: 'hp' | 'mp'; value: number } | null;
 }

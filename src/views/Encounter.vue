@@ -121,8 +121,27 @@ export default Vue.extend({
 
         // Execute selected action
         console.log(this.currentCombatant.name, 'performs', selection[0].name, 'on', selection[1].map((a) => { return a.name }))
-        const r = this.currentCombatant.takeAction(...selection)
-        console.log('--> ', r.map((r) => { return RPG.EncounterActionResult[r] }))
+        // - Determine how many times to execute the action
+        const count = RPG.getRandomIntBetween(selection[0].executionCount.min, selection[0].executionCount.max)
+        // - Take the action the proper number of times
+        for (let i = 0; i < count; i++) {
+          const r = this.currentCombatant.takeAction(selection[0], selection[1], i !== 0)
+          console.log('--> ', r.map((r) => { return RPG.EncounterActionResult[r] }))
+
+          // If our targets are all defeated, we don't need to continue
+          if (selection[1].reduce((c, e) => { return c + e.hp }, 0) === 0) {
+            break
+          }
+
+          // Pause slightly before continuing if we have more iterations to go
+          if (i + 1 !== count) {
+            await new Promise((resolve) => {
+              setTimeout(() => {
+                resolve()
+              }, this.simulationDelay / 2)
+            })
+          }
+        }
       }
 
       // Pass to next combatant
