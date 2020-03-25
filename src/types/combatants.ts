@@ -112,11 +112,11 @@ export class Combatant {
     this.actions = EncounterActions as Array<EncounterAction>
   }
 
-  public takeAction (a: EncounterAction, targets: Array<Combatant>): Array<EncounterActionResult> {
+  public takeAction (a: EncounterAction, targets: Array<Combatant>, ignoreCost = false): Array<EncounterActionResult> {
     const results = []
 
     // Honor the cost of the action
-    if (a.cost !== null) {
+    if (!ignoreCost && a.cost !== null) {
       this[a.cost.pool] -= a.cost.value
     }
 
