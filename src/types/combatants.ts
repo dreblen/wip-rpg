@@ -177,7 +177,6 @@ export class Combatant {
 
           // Queue the removal of the buff
           this.actionHooks.push(() => {
-            console.log('Undoing buff')
             for (const attr in a.attributes) {
               this.attributes[attr].value -= a.attributes[attr] as number
             }
