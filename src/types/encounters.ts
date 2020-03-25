@@ -56,8 +56,6 @@ export interface EncounterAction {
   name: string;
   affinities: Array<AttributeName>;
   cost: { pool: 'hp' | 'mp'; value: number } | null;
-  actor: Combatant;
-  action: (targets: Array<Combatant>) => Array<EncounterActionResult>;
 }
 
 // Combination of an action and one or more action targets

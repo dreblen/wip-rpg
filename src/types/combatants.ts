@@ -111,52 +111,52 @@ export class Combatant {
       {
         name: 'Attack',
         cost: null,
-        affinities: ['phy'],
-        actor: this,
-        action: function (targets: Array<Combatant>): Array<EncounterActionResult> {
-          const results = []
-
-          // Perform our action on all specified targets
-          for (const target of targets) {
-            // Roll for hit
-            const hitRate = 0.95 // TODO: Should be based on equipment
-            let roll = Math.random()
-            if (roll > hitRate) {
-              results.push(EncounterActionResult.Miss)
-              continue
-            }
-
-            // Roll for dodge
-            const dodgeRate = 0.05 // TODO: Should be based on equipment
-            roll = Math.random()
-            // - relative agility increases or decreases the roll
-            const diff = this.actor.attributes.agl.value - target.attributes.agl.value
-            const maxChange = 1 - dodgeRate
-            roll += (maxChange - (maxChange / (Math.abs(diff / 15) + 1))) * (diff / Math.abs(diff))
-            if (roll < dodgeRate) {
-              results.push(EncounterActionResult.Dodge)
-              continue
-            }
-
-            // Roll for damage
-            // - base damage is our primary attribute minus the target's defense
-            let base = 5 * Math.max(1, this.actor.attributes[this.affinities[0]].value - target.attributes.end.value)
-            // - randomize the base damage slightly
-            base *= Math.max(0.9, Math.min(1.1, Math.random() + 0.5))
-            // - increase our base damage by attribute factors
-            for (let i = 0; i < this.affinities.length; i++) {
-              const f = (1 / (i + 1)) * this.actor.attributes[this.affinities[i]].value
-              base *= 1 + (f * 0.05)
-            }
-            target.hp = Math.max(0, target.hp - Math.ceil(base))
-
-            results.push(EncounterActionResult.Success)
-          }
-
-          return results
-        }
+        affinities: ['phy']
       }
     ]
+  }
+
+  public takeAction (a: EncounterAction, targets: Array<Combatant>): Array<EncounterActionResult> {
+    const results = []
+
+    // Perform our action on all specified targets
+    for (const target of targets) {
+      // Roll for hit
+      const hitRate = 0.95 // TODO: Should be based on equipment
+      let roll = Math.random()
+      if (roll > hitRate) {
+        results.push(EncounterActionResult.Miss)
+        continue
+      }
+
+      // Roll for dodge
+      const dodgeRate = 0.05 // TODO: Should be based on equipment
+      roll = Math.random()
+      // - relative agility increases or decreases the roll
+      const diff = this.attributes.agl.value - target.attributes.agl.value
+      const maxChange = 1 - dodgeRate
+      roll += (maxChange - (maxChange / (Math.abs(diff / 15) + 1))) * (diff / Math.abs(diff))
+      if (roll < dodgeRate) {
+        results.push(EncounterActionResult.Dodge)
+        continue
+      }
+
+      // Roll for damage
+      // - base damage is our primary attribute minus the target's defense
+      let base = 5 * Math.max(1, this.attributes[a.affinities[0]].value - target.attributes.end.value)
+      // - randomize the base damage slightly
+      base *= Math.max(0.9, Math.min(1.1, Math.random() + 0.5))
+      // - increase our base damage by attribute factors
+      for (let i = 0; i < a.affinities.length; i++) {
+        const f = (1 / (i + 1)) * this.attributes[a.affinities[i]].value
+        base *= 1 + (f * 0.05)
+      }
+      target.hp = Math.max(0, target.hp - Math.ceil(base))
+
+      results.push(EncounterActionResult.Success)
+    }
+
+    return results
   }
 
   public getSelectedAction (combatants: Array<Combatant>): ActionSelection {

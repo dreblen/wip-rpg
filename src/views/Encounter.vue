@@ -119,7 +119,7 @@ export default Vue.extend({
 
         // Execute selected action
         console.log(this.currentCombatant.name, 'performs', selection[0].name, 'on', selection[1].map((a) => { return a.name }))
-        const r = selection[0].action(selection[1])
+        const r = this.currentCombatant.takeAction(...selection)
         console.log('--> ', r.map((r) => { return RPG.EncounterActionResult[r] }))
       }
 
