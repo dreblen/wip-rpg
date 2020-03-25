@@ -3,6 +3,7 @@ import {
   EncounterAction,
   EncounterActionType,
   EncounterActionAttack,
+  EncounterActionBuff,
   EncounterActionResult
 } from './encounters'
 
@@ -68,6 +69,7 @@ export class Combatant {
   name: string;
 
   actions: Array<EncounterAction>;
+  actionHooks: Array<() => void>;
 
   isSimulated: boolean;
 
@@ -112,6 +114,7 @@ export class Combatant {
 
     // Add basic actions
     this.actions = EncounterActions as Array<EncounterAction>
+    this.actionHooks = []
   }
 
   public takeAction (action: EncounterAction, targets: Array<Combatant>, ignoreCost = false): Array<EncounterActionResult> {
@@ -160,6 +163,25 @@ export class Combatant {
           target.hp = Math.max(0, target.hp - Math.ceil(base))
 
           results.push(EncounterActionResult.Success)
+          break
+        }
+        case 'EncounterActionBuff': {
+          const a: EncounterActionBuff = action as EncounterActionBuff
+
+          // TODO: Alter the buff based on attribute affinities
+
+          // Alter the target's attributes
+          for (const attr in a.attributes) {
+            this.attributes[attr].value += a.attributes[attr] as number
+          }
+
+          // Queue the removal of the buff
+          this.actionHooks.push(() => {
+            console.log('Undoing buff')
+            for (const attr in a.attributes) {
+              this.attributes[attr].value -= a.attributes[attr] as number
+            }
+          })
           break
         }
       }

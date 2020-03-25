@@ -16,6 +16,18 @@
     }
   },
   {
+    "name": "Defend",
+    "type": "EncounterActionBuff",
+    "description": "Increases endurance for a single party member.",
+    "executionCount": {
+      "min": 1,
+      "max": 1
+    },
+    "cost": null,
+    "affinities": ["phy"],
+    "attributes": { "end": 5 }
+  },
+  {
     "name": "Multi-Attack",
     "type": "EncounterActionAttack",
     "description": "3-5 physical attacks against one enemy.",

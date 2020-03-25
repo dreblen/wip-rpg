@@ -61,7 +61,7 @@ export interface EncounterAction {
   cost: { pool: 'hp' | 'mp'; value: number } | null;
 }
 
-export type EncounterActionType = 'EncounterActionAttack';
+export type EncounterActionType = 'EncounterActionAttack' | 'EncounterActionBuff';
 
 export interface EncounterActionAttack extends EncounterAction {
   damage: number;
@@ -69,6 +69,10 @@ export interface EncounterActionAttack extends EncounterAction {
     hit: number;
     dodge: number;
   };
+}
+
+export interface EncounterActionBuff extends EncounterAction {
+  attributes: AttributeValueList;
 }
 
 // Combination of an action and one or more action targets

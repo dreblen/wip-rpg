@@ -89,6 +89,12 @@ export default Vue.extend({
         return
       }
 
+      // See if we need to perform any queued actions for this combatant
+      const hook = this.currentCombatant.actionHooks.shift()
+      if (hook !== undefined) {
+        hook()
+      }
+
       // Make sure we're allowed to take a turn
       let canTakeTurn = true
       if (this.currentCombatant.hp <= 0) {

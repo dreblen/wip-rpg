@@ -137,6 +137,16 @@ export default new Vuex.Store({
         living.forEach((p) => {
           p.encountersUntilAvailable = 1
         })
+
+        // Complete any pending actions for these party members (e.g., undoing
+        // stat buffs)
+        living.forEach((p) => {
+          let hook = p.actionHooks.shift()
+          while (hook !== undefined) {
+            hook()
+            hook = p.actionHooks.shift()
+          }
+        })
       }
 
       // For any party members who were *not* in this most recent encounter,
