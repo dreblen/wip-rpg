@@ -3,5 +3,13 @@
     "name":"Attack",
     "cost": null,
     "affinities": ["phy"]
+  },
+  {
+    "name":"Magic Attack",
+    "cost": {
+      "pool": "mp",
+      "value": 5
+    },
+    "affinities": ["mag"]
   }
 ]

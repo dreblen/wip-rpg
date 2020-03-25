@@ -115,6 +115,11 @@ export class Combatant {
   public takeAction (a: EncounterAction, targets: Array<Combatant>): Array<EncounterActionResult> {
     const results = []
 
+    // Honor the cost of the action
+    if (a.cost !== null) {
+      this[a.cost.pool] -= a.cost.value
+    }
+
     // Perform our action on all specified targets
     for (const target of targets) {
       // Roll for hit
@@ -157,7 +162,14 @@ export class Combatant {
 
   public getSelectedAction (combatants: Array<Combatant>): ActionSelection {
     // Select an action
-    const action = this.actions[0] // XXX: improve
+    const actions = this.actions.filter((a) => {
+      if (a.cost === null) {
+        return true
+      } else {
+        return this[a.cost.pool] >= a.cost.value
+      }
+    })
+    const action = actions[0] // XXX: improve
 
     // Select a target
     const opposingCombatants = combatants.filter(c => c.team !== this.team && c.hp > 0)

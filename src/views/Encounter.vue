@@ -18,6 +18,7 @@
           v-for="action in currentCombatant.actions"
           @click="onActionSelected(action)"
           :key="action.name"
+          :disabled="action.cost !== null && currentCombatant[action.cost.pool] < action.cost.value"
         >
           {{ action.name }}
         </v-btn>
