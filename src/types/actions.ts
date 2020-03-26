@@ -12,6 +12,7 @@ export enum Result {
 export interface Action {
   name: string;
   type: Type;
+  targetType: TargetType;
   description: string;
   executionCount: { min: number; max: number };
   affinities: Array<Attributes.Name>;
@@ -19,6 +20,7 @@ export interface Action {
 }
 
 export type Type = 'Attack' | 'Buff';
+export type TargetType = 'Self' | 'Single' | 'All';
 
 export interface Attack extends Action {
   damage: number;

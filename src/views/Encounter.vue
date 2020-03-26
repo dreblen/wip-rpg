@@ -71,11 +71,33 @@ export default Vue.extend({
   methods: {
     onTargetSelected (target: RPG.Combatants.Combatant): void {
       // We shouldn't be here if we don't already have an action pending
-      if (this.pendingUserAction === null || this.resolveUserAction === null) {
+      // or if we don't have a current combatant somehow
+      if (this.pendingUserAction === null || this.resolveUserAction === null || this.currentCombatant === null) {
         return
       }
 
-      this.resolveUserAction([this.pendingUserAction, [target]])
+      // Adjust our target as needed based on the target type of our action
+      const targets: Array<RPG.Combatants.Combatant> = []
+      switch (this.pendingUserAction.targetType) {
+        case 'Self':
+          // XXX: This is not a good user experience since the user could have
+          // clicked on *any* target and still apply the action to the current
+          // combatant
+          targets.push(this.currentCombatant)
+          break
+        case 'Single':
+          targets.push(target)
+          break
+        case 'All':
+          this.combatants.forEach((c) => {
+            if (c.team === target.team) {
+              targets.push(c)
+            }
+          })
+          break
+      }
+
+      this.resolveUserAction([this.pendingUserAction, targets])
     },
     onActionSelected (action: RPG.Actions.Action): void {
       this.pendingUserAction = action
