@@ -66,6 +66,30 @@ export class Combatant {
     this.actionHooks = []
   }
 
+  public getAttributeAffinities (): Array<Attributes.Name> {
+    // Filter our attributes to those that have some value, then return their
+    // names sorted by value, highest to lowest
+    const aNames = Object.keys(this.attributes) as Array<Attributes.Name>
+    return aNames.filter(a => this.attributes[a].value > 0).sort((a, b) => {
+      if (this.attributes[a].value > this.attributes[b].value) {
+        return -1
+      }
+      if (this.attributes[b].value > this.attributes[a].value) {
+        return 1
+      }
+      return 0
+    })
+  }
+
+  public getPrimaryAttributeAffinity (): Attributes.Name {
+    const list = this.getAttributeAffinities()
+    if (list.length > 0) {
+      return list[0]
+    } else {
+      return 'phy'
+    }
+  }
+
   public takeAction (action: Actions.Action, targets: Array<Combatant>, ignoreCost = false): Array<Actions.Result> {
     const results = []
 
