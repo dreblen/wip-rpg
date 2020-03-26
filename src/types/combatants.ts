@@ -216,6 +216,8 @@ export class Combatant {
         actionOptions: []
       })
     })
+    // - sort our target options randomly so they're not always in the same order
+    targetOptions.sort(() => { return Math.random() - 0.5 })
 
     // 2. For each possible target, determine action priority, weighted and
     // sorted with the best action first
@@ -300,11 +302,18 @@ export class Combatant {
     // 3. Final selection is the highest combined target+action weight
     // evaluation, so we need to start by filtering out any targets that don't
     // have any valid action options
+    const variance = 0.75
     const bestOption = targetOptions.filter(o => o.actionOptions.length > 0).reduce((c, to) => {
       // Compare the combined weight of this target and its best option against
       // the other best combinations
       if (to.weight + to.actionOptions[0].weight > c.weight + c.actionOptions[0].weight) {
-        return to
+        // Normally this would mean that 'to' is better than 'c', but if we pass
+        // a roll against the variance value, we act like it was worse
+        if (Math.random() > variance) {
+          return c
+        } else {
+          return to
+        }
       } else {
         return c
       }
