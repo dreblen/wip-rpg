@@ -114,6 +114,7 @@ export class Combatant {
           results.push(Actions.Result.Success)
           break
         }
+        case 'Debuff':
         case 'Buff': {
           const a: Actions.Buff = action as Actions.Buff
 

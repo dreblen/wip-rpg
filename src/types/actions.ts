@@ -19,7 +19,7 @@ export interface Action {
   cost: { pool: 'hp' | 'mp'; value: number } | null;
 }
 
-export type Type = 'Attack' | 'Buff';
+export type Type = 'Attack' | 'Buff' | 'Debuff';
 export type TargetType = 'Self' | 'Single' | 'All';
 
 export interface Attack extends Action {
