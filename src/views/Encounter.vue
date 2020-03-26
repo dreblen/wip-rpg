@@ -70,7 +70,6 @@ export default Vue.extend({
   },
   methods: {
     onTargetSelected (target: RPG.Combatants.Combatant): void {
-      // XXX: Double-clicking makes the action run twice?
       // We shouldn't be here if we don't already have an action pending
       if (this.pendingUserAction === null || this.resolveUserAction === null) {
         return
