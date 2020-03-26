@@ -7,6 +7,11 @@
       :disabled="c.hp <= 0"
     >
       <v-card-title>{{ c.name }}</v-card-title>
+      <v-card-subtitle
+        v-if="encounter.currentCombatant !== null && encounter.currentCombatant.id === c.id"
+      >
+        Taking Turn
+      </v-card-subtitle>
       <v-card-text>
         <v-row>
           <v-col class="flex-grow-0 flex-shrink-1">
@@ -43,12 +48,18 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapState } from 'vuex'
 import { Combatant } from '@/types/combatants'
 
 export default Vue.extend({
   name: 'CombatantCards',
   data: () => ({
   }),
+  computed: {
+    ...mapState([
+      'encounter'
+    ])
+  },
   props: {
     combatants: {
       type: Array

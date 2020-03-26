@@ -63,6 +63,11 @@ export default Vue.extend({
       }
     }
   },
+  watch: {
+    currentCombatant: function () {
+      this.$store.commit('setEncounterCurrentCombatant', this.currentCombatant)
+    }
+  },
   methods: {
     onTargetSelected (target: RPG.Combatants.Combatant): void {
       // XXX: Double-clicking makes the action run twice?

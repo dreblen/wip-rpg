@@ -11,6 +11,7 @@ interface EncounterState {
   index: number;
   isActive: boolean;
   isSimulated: boolean;
+  currentCombatant: RPG.Combatants.Combatant | null;
   rewards: Array<RPG.Encounters.Reward>;
   party: Array<RPG.Combatants.PartyCombatant>;
   enemies: Array<RPG.Combatants.EnemyCombatant>;
@@ -29,6 +30,7 @@ export default new Vuex.Store({
       index: 0,
       isActive: false,
       isSimulated: false,
+      currentCombatant: null,
       rewards: [],
       party: [],
       enemies: []
@@ -81,6 +83,9 @@ export default new Vuex.Store({
     },
     setEncounterActive: function (state: State, isActive: boolean) {
       state.encounter.isActive = isActive
+    },
+    setEncounterCurrentCombatant: function (state: State, c: RPG.Combatants.Combatant) {
+      state.encounter.currentCombatant = c
     },
     setEncounterRewards: function (state: State, rewards: Array<RPG.Encounters.Reward>) {
       state.encounter.rewards = rewards
