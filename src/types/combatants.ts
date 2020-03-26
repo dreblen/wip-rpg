@@ -164,20 +164,153 @@ export class Combatant {
   }
 
   public getSelectedAction (combatants: Array<Combatant>): Actions.Selection {
-    // Select an action
-    const actions = this.actions.filter((a) => {
-      if (a.cost === null) {
+    // 0. Gather some preliminary information about our situation
+    const attributeAffinities = this.getAttributeAffinities()
+    const primaryAttributeAffinity = this.getPrimaryAttributeAffinity()
+
+    // 1. Determine target priority, weighted with points. The team-based "All"
+    // groups are added as aggregates of the individual targets.
+    interface ActionOption {
+      action: Actions.Action;
+      weight: number;
+    }
+    interface TargetOption {
+      type: Actions.TargetType;
+      targets: Array<Combatant>;
+      weight: number;
+      actionOptions: Array<ActionOption>;
+    }
+    const targetOptions: Array<TargetOption> = []
+    // - determine our single-target options
+    combatants.filter(c => c.hp > 0).forEach((c) => {
+      let weight = 0
+
+      // * Subject of previous buff/debuff
+      if (c.actionHooks.length > 0) {
+        weight++
+      }
+
+      // * Lowness of health
+      weight += Math.floor(((c.maxHP - c.hp) / c.maxHP) * 10)
+
+      // * Vulnerability
+      if (c.id !== this.id) {
+        weight += this.attributes[primaryAttributeAffinity].value - c.attributes.end.value
+      }
+
+      // Add our target option
+      targetOptions.push({
+        type: (c.id === this.id) ? 'Self' : 'Single',
+        targets: [c],
+        weight: weight,
+        actionOptions: []
+      })
+    })
+    // - aggregate our all-target options
+    const teams = [Team.Party, Team.Enemy]
+    teams.forEach((team) => {
+      targetOptions.push({
+        type: 'All',
+        targets: combatants.filter(c => c.team === team),
+        weight: targetOptions.filter(o => o.type !== 'All' && o.targets[0].team === team).reduce((c, o) => c + o.weight, 0),
+        actionOptions: []
+      })
+    })
+
+    // 2. For each possible target, determine action priority, weighted and
+    // sorted with the best action first
+    targetOptions.forEach((to) => {
+      // Go through any actions that we are actually able to perform on this target
+      this.actions.filter((a) => {
+        // Make sure it's compatible with the target type
+        if (a.targetType !== to.type) {
+          // Special exception for 'Single' actions, which can apply to 'Self'
+          if (!(a.targetType === 'Single' && to.type === 'Self')) {
+            return false
+          }
+        }
+
+        // Make sure we have enough to cover its cost
+        if (a.cost !== null && this[a.cost.pool] < a.cost.value) {
+          return false
+        }
+
+        // Make sure it won't help the other team
+        if (to.targets[0].team !== this.team && a.type === 'Buff') {
+          return false
+        }
+
+        // Make sure it won't harm our team
+        if (to.targets[0].team === this.team && (a.type === 'Attack' || a.type === 'Debuff')) {
+          return false
+        }
+
+        // Otherwise, fine to include
         return true
+      }).forEach((a) => {
+        let weight = 0
+        const avgExecutions = Math.floor(a.executionCount.min + a.executionCount.max / 2)
+
+        // * Minimization of cost (i.e., prefer free or low-cost actions)
+        if (a.cost !== null) {
+          weight -= a.cost.value
+        }
+
+        // * Maximization of affinity (most affinity matches)
+        a.affinities.forEach((af) => {
+          // Give more weight to our stronger affinities
+          const index = attributeAffinities.indexOf(af)
+          if (index !== -1) {
+            weight += (Object.keys(this.attributes).length - index)
+          }
+        })
+
+        // Factors that apply only to attacks:
+        if (a.type === 'Attack') {
+          const aa = a as Actions.Attack
+          // * Maximization of damage (base value, but considering execution count)
+          weight += aa.damage * avgExecutions
+
+          // * Maximization of hit rate (considering execution count)
+          weight += Math.floor(aa.rates.hit * 5 * avgExecutions)
+
+          // * Minimization of dodge rate (considering execution count)
+          weight -= Math.floor(aa.rates.dodge * 5 * avgExecutions)
+        }
+
+        // Add the final option information
+        to.actionOptions.push({
+          action: a,
+          weight: weight
+        })
+      })
+
+      // Sort our action options by weight
+      to.actionOptions.sort((a, b) => {
+        if (a.weight > b.weight) {
+          return -1
+        }
+        if (b.weight > a.weight) {
+          return 1
+        }
+        return 0
+      })
+    })
+
+    // 3. Final selection is the highest combined target+action weight
+    // evaluation, so we need to start by filtering out any targets that don't
+    // have any valid action options
+    const bestOption = targetOptions.filter(o => o.actionOptions.length > 0).reduce((c, to) => {
+      // Compare the combined weight of this target and its best option against
+      // the other best combinations
+      if (to.weight + to.actionOptions[0].weight > c.weight + c.actionOptions[0].weight) {
+        return to
       } else {
-        return this[a.cost.pool] >= a.cost.value
+        return c
       }
     })
-    const action = actions[0] // XXX: improve
 
-    // Select a target
-    const opposingCombatants = combatants.filter(c => c.team !== this.team && c.hp > 0)
-
-    return [action, [opposingCombatants[0]]]
+    return [bestOption.actionOptions[0].action, bestOption.targets]
   }
 
   public increaseAttribute (name: Attributes.Name, increase: number, sideEffectsOnly = false): void {
